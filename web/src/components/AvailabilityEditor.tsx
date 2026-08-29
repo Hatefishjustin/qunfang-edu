@@ -52,12 +52,12 @@ export default function AvailabilityEditor({
     }
   }
 
-  if (loading) return <p className="text-sm text-ink/50">加载中…</p>;
+  if (loading) return <p className="text-sm text-ink-tertiary">加载中…</p>;
 
   return (
     <div className="space-y-2">
       {rules.length === 0 && (
-        <p className="rounded-lg bg-primary-bg px-3 py-2 text-sm text-ink/50">
+        <p className="rounded-xl bg-page px-3 py-2 text-sm text-ink-tertiary">
           还没有申报时间。添加规则后，排课时就能看到这位老师什么时候有空。
         </p>
       )}
@@ -66,7 +66,7 @@ export default function AvailabilityEditor({
           <select
             value={r.weekday}
             onChange={(e) => updateRule(i, { weekday: Number(e.target.value) })}
-            className="rounded-lg border border-black/10 px-2 py-1.5 text-sm"
+            className="rounded-xl border border-border px-2 py-1.5 text-sm"
           >
             {WEEKDAY_NAMES.map((n, idx) => (
               <option key={idx} value={idx}>
@@ -78,26 +78,26 @@ export default function AvailabilityEditor({
             type="time"
             value={r.start_time}
             onChange={(e) => updateRule(i, { start_time: e.target.value })}
-            className="rounded-lg border border-black/10 px-2 py-1.5 text-sm"
+            className="rounded-xl border border-border px-2 py-1.5 text-sm"
           />
-          <span className="text-ink/40">–</span>
+          <span className="text-ink-muted">–</span>
           <input
             type="time"
             value={r.end_time}
             onChange={(e) => updateRule(i, { end_time: e.target.value })}
-            className="rounded-lg border border-black/10 px-2 py-1.5 text-sm"
+            className="rounded-xl border border-border px-2 py-1.5 text-sm"
           />
           <select
             value={r.kind}
             onChange={(e) => updateRule(i, { kind: e.target.value })}
-            className="rounded-lg border border-black/10 px-2 py-1.5 text-sm"
+            className="rounded-xl border border-border px-2 py-1.5 text-sm"
           >
             <option value="available">可上课</option>
             <option value="unavailable">不可上课</option>
           </select>
           <button
             onClick={() => setRules(rules.filter((_, idx) => idx !== i))}
-            className="rounded-lg px-2 py-1.5 text-sm text-red-600 hover:bg-red-50"
+            className="rounded-xl px-2 py-1.5 text-sm text-error hover:bg-error-soft"
             aria-label="删除此条"
           >
             ✕
@@ -108,7 +108,7 @@ export default function AvailabilityEditor({
         onClick={() =>
           setRules([...rules, { weekday: 0, start_time: '09:00', end_time: '12:00', kind: 'available' }])
         }
-        className="mt-2 w-full rounded-lg border border-dashed border-black/20 py-2 text-sm text-ink/60 hover:border-primary hover:text-primary"
+        className="mt-2 w-full rounded-xl border border-dashed border-black/20 py-2 text-sm text-ink-tertiary hover:border-primary hover:text-primary"
       >
         + 添加时段
       </button>
@@ -116,7 +116,7 @@ export default function AvailabilityEditor({
         {onCancel && (
           <button
             onClick={onCancel}
-            className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+            className="btn-secondary"
           >
             取消
           </button>
@@ -124,7 +124,7 @@ export default function AvailabilityEditor({
         <button
           onClick={() => void save()}
           disabled={saving}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+          className="btn-primary disabled:opacity-60"
         >
           {saving ? '保存中…' : '保存'}
         </button>

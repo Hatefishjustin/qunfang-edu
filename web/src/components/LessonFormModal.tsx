@@ -185,8 +185,8 @@ export default function LessonFormModal({
   }
 
   // ---------- 渲染 ----------
-  const inputCls =
-    'mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
+  const inputCls = 'input mt-1.5';
+  const selectCls = 'select mt-1.5';
 
   return (
     <Modal
@@ -196,7 +196,7 @@ export default function LessonFormModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Tab 切换（仅 create） */}
         {mode === 'create' && (
-          <div className="flex gap-1 rounded-lg bg-black/5 p-1">
+          <div className="flex gap-1 rounded-xl bg-border-light p-1">
             {(
               [
                 ['single', '单次建课'],
@@ -207,9 +207,7 @@ export default function LessonFormModal({
                 key={k}
                 type="button"
                 onClick={() => setTab(k)}
-                className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium ${
-                  tab === k ? 'bg-white text-primary shadow-sm' : 'text-ink/50'
-                }`}
+                className={`flex-1 ${tab === k ? 'nav-tab-active' : 'nav-tab'}`}
               >
                 {label}
               </button>
@@ -219,7 +217,7 @@ export default function LessonFormModal({
 
         {/* 班级 */}
         {mode === 'edit' ? (
-          <div className="rounded-lg bg-primary-bg px-3 py-2 text-sm text-ink/70">
+          <div className="rounded-xl bg-page px-3 py-2 text-sm text-ink-secondary">
             班级：{lesson?.class_name}
             {lesson?.course_name ? `（${lesson.course_name}）` : ''}
           </div>
@@ -229,7 +227,7 @@ export default function LessonFormModal({
             <select
               value={form.classId}
               onChange={(e) => setForm({ ...form, classId: Number(e.target.value), teacherId: 0, roomId: 0 })}
-              className={inputCls}
+              className={selectCls}
             >
               <option value={0}>请选择班级</option>
               {(classes ?? []).map((cl) => (
@@ -248,7 +246,7 @@ export default function LessonFormModal({
           <select
             value={form.teacherId}
             onChange={(e) => setForm({ ...form, teacherId: Number(e.target.value) })}
-            className={inputCls}
+            className={selectCls}
           >
             <option value={0}>请选择老师</option>
             {finalTeacherOptions.map((t) => (
@@ -266,7 +264,7 @@ export default function LessonFormModal({
           <select
             value={form.roomId}
             onChange={(e) => setForm({ ...form, roomId: Number(e.target.value) })}
-            className={inputCls}
+            className={selectCls}
           >
             <option value={0}>不指定教室</option>
             {finalRoomOptions.map((r) => (
@@ -286,7 +284,7 @@ export default function LessonFormModal({
                 <select
                   value={form.weekday}
                   onChange={(e) => setForm({ ...form, weekday: Number(e.target.value) })}
-                  className={inputCls}
+                  className={selectCls}
                 >
                   {WEEKDAY_NAMES.map((n, i) => (
                     <option key={i} value={i}>
@@ -361,7 +359,7 @@ export default function LessonFormModal({
         </label>
 
         {mode === 'create' && (
-          <label className="flex items-start gap-2 text-sm text-ink/70">
+          <label className="flex items-start gap-2 text-sm text-ink-secondary">
             <input
               type="checkbox"
               checked={form.force}
@@ -378,7 +376,7 @@ export default function LessonFormModal({
               type="button"
               onClick={() => void cancelLesson()}
               disabled={saving}
-              className="rounded-lg border border-red-200 px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-60"
+              className="btn-danger disabled:opacity-60"
             >
               取消这节课
             </button>
@@ -389,14 +387,14 @@ export default function LessonFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+              className="btn-secondary"
             >
               关闭
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+              className="btn-primary disabled:opacity-60"
             >
               {saving ? '保存中…' : mode === 'edit' ? '保存调课' : '创建'}
             </button>

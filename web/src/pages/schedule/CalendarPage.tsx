@@ -47,7 +47,7 @@ export default function CalendarPage() {
   const blockToLesson = (block: CalendarBlock): Lesson | undefined =>
     (lessons ?? []).find((l) => l.id === block.id);
 
-  const selectCls = 'rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-primary';
+  const selectCls = 'select';
 
   return (
     <div>
@@ -55,7 +55,7 @@ export default function CalendarPage() {
         <h1 className="text-xl font-bold text-ink">排课周历</h1>
         <button
           onClick={() => setCreateInitial({ date: weekStart, startTime: '09:00' })}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 新建课
         </button>
@@ -89,8 +89,8 @@ export default function CalendarPage() {
         </select>
       </div>
 
-      {loading && <p className="mb-2 text-ink/50">加载中…</p>}
-      {error && <p className="mb-2 text-red-600">{error}</p>}
+      {loading && <p className="mb-2 text-ink-tertiary">加载中…</p>}
+      {error && <p className="mb-2 text-error">{error}</p>}
 
       <WeekGrid
         weekStart={weekStart}
@@ -101,7 +101,7 @@ export default function CalendarPage() {
           if (lesson) setEditLesson(lesson);
         }}
       />
-      <p className="mt-2 text-xs text-ink/40">
+      <p className="mt-2 text-xs text-ink-muted">
         共 {(lessons ?? []).length} 节课 · 点空白格快速建课，点课块调课/取消
       </p>
 

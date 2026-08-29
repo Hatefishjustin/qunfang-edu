@@ -125,7 +125,7 @@ export default function UsersPage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-ink">用户管理</h1>
-          <p className="mt-1 text-sm text-ink/50">
+          <p className="mt-1 text-sm text-ink-tertiary">
             共 {data?.total ?? 0} 个账号
             {campusFilter
               ? ` · 筛选：${campuses?.find((c) => String(c.id) === campusFilter)?.name ?? '指定校区'}`
@@ -134,7 +134,7 @@ export default function UsersPage() {
         </div>
         <button
           onClick={() => setCreating(true)}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 创建账号
         </button>
@@ -148,7 +148,7 @@ export default function UsersPage() {
             setRole(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
+          className="select"
         >
           <option value="">全部角色</option>
           {ALL_ROLES.map((r) => (
@@ -163,7 +163,7 @@ export default function UsersPage() {
             setStatus(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
+          className="select"
         >
           <option value="">全部状态</option>
           <option value="active">正常</option>
@@ -171,13 +171,13 @@ export default function UsersPage() {
         </select>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[700px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">姓名</th>
               <th className="px-4 py-3 font-medium">手机号</th>
               <th className="px-4 py-3 font-medium">角色</th>
@@ -188,18 +188,18 @@ export default function UsersPage() {
           </thead>
           <tbody>
             {data?.items.map((u) => (
-              <tr key={u.id} className="border-b border-black/5 last:border-0">
+              <tr key={u.id} className="table-row">
                 <td className="px-4 py-3 font-medium text-ink">{u.name}</td>
-                <td className="px-4 py-3 text-ink/70">{u.phone}</td>
-                <td className="px-4 py-3 text-ink/70">{ROLE_LABELS[u.role]}</td>
-                <td className="px-4 py-3 text-ink/70">{u.campus_name ?? '全局'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{u.phone}</td>
+                <td className="px-4 py-3 text-ink-secondary">{ROLE_LABELS[u.role]}</td>
+                <td className="px-4 py-3 text-ink-secondary">{u.campus_name ?? '全局'}</td>
                 <td className="px-4 py-3">
                   {u.status === 'active' ? (
-                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                    <span className="badge-success">
                       正常
                     </span>
                   ) : (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                    <span className="badge-muted">
                       已禁用
                     </span>
                   )}
@@ -210,7 +210,7 @@ export default function UsersPage() {
                       setEditTarget(u);
                       setEditForm({ name: u.name, phone: u.phone });
                     }}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     编辑
                   </button>
@@ -219,16 +219,16 @@ export default function UsersPage() {
                       setResetTarget(u);
                       setNewPassword('');
                     }}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     重置密码
                   </button>
                   <button
                     onClick={() => void toggleStatus(u)}
-                    className={`rounded-lg border px-2.5 py-1.5 text-xs ${
+                    className={`rounded-xl border px-2.5 py-1.5 text-xs ${
                       u.status === 'active'
-                        ? 'border-red-200 text-red-600 hover:bg-red-50'
-                        : 'border-green-200 text-green-700 hover:bg-green-50'
+                        ? 'border-error-bg text-error hover:bg-error-soft'
+                        : 'border-success-bg text-success hover:bg-success-soft'
                     }`}
                   >
                     {u.status === 'active' ? '禁用' : '启用'}
@@ -238,7 +238,7 @@ export default function UsersPage() {
             ))}
             {data?.items.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={6} className="px-4 py-10 text-center text-ink-muted">
                   没有符合条件的账号
                 </td>
               </tr>
@@ -253,17 +253,17 @@ export default function UsersPage() {
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
-            className="rounded-lg border border-black/10 px-3 py-1.5 text-ink/70 disabled:opacity-40"
+            className="btn-secondary disabled:opacity-40"
           >
             上一页
           </button>
-          <span className="text-ink/60">
+          <span className="text-ink-tertiary">
             {page} / {totalPages}
           </span>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage(page + 1)}
-            className="rounded-lg border border-black/10 px-3 py-1.5 text-ink/70 disabled:opacity-40"
+            className="btn-secondary disabled:opacity-40"
           >
             下一页
           </button>
@@ -280,7 +280,7 @@ export default function UsersPage() {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -290,7 +290,7 @@ export default function UsersPage() {
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 placeholder="11 位手机号"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -298,7 +298,7 @@ export default function UsersPage() {
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value as Role })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary"
+                className="mt-1.5 w-full rounded-xl border border-border px-3 py-2 outline-none focus:border-primary"
               >
                 {ALL_ROLES.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -313,7 +313,7 @@ export default function UsersPage() {
                 <select
                   value={form.campus_id}
                   onChange={(e) => setForm({ ...form, campus_id: e.target.value })}
-                  className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary"
+                  className="mt-1.5 w-full rounded-xl border border-border px-3 py-2 outline-none focus:border-primary"
                 >
                   <option value="">请选择校区</option>
                   {campuses?.map((c) => (
@@ -331,21 +331,21 @@ export default function UsersPage() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="Passw0rd!"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setCreating(false)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '创建中…' : '创建'}
               </button>
@@ -364,20 +364,20 @@ export default function UsersPage() {
                 type="text"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setResetTarget(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+                className="btn-primary"
               >
                 确认重置
               </button>
@@ -396,7 +396,7 @@ export default function UsersPage() {
                 type="text"
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -405,20 +405,20 @@ export default function UsersPage() {
                 type="tel"
                 value={editForm.phone}
                 onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setEditTarget(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+                className="btn-primary"
               >
                 保存
               </button>

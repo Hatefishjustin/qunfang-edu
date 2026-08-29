@@ -31,10 +31,10 @@ export default function TeachersOverviewPage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">教师忙闲总览</h1>
-          <p className="mt-1 text-sm text-ink/50">点空白处快速建课 · 点色块调课/取消</p>
+          <p className="mt-1 text-sm text-ink-tertiary">点空白处快速建课 · 点色块调课/取消</p>
         </div>
         {/* 图例 */}
-        <div className="flex flex-wrap items-center gap-3 text-xs text-ink/50">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-ink-tertiary">
           <span className="flex items-center gap-1">
             <span className="h-2.5 w-4 rounded-sm" style={{ backgroundColor: 'rgba(124,154,110,0.5)' }} />
             空闲
@@ -48,14 +48,14 @@ export default function TeachersOverviewPage() {
             已排课
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-4 rounded-sm border border-black/10 bg-white" />
+            <span className="h-2.5 w-4 rounded-sm border border-border bg-surface" />
             未申报
           </span>
         </div>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
       {/* 桌面：全教师周网格 */}
       <div className="hidden md:block">
@@ -76,7 +76,7 @@ export default function TeachersOverviewPage() {
             <select
               value={mobileTeacher?.id ?? ''}
               onChange={(e) => setMobileTeacherId(Number(e.target.value))}
-              className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm"
             >
               {data.teachers.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -92,17 +92,15 @@ export default function TeachersOverviewPage() {
                   <button
                     key={i}
                     onClick={() => setMobileDay(i)}
-                    className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ${
-                      mobileDay === i ? 'bg-primary text-white' : 'bg-white text-ink/60'
-                    }`}
+                    className={`${mobileDay === i ? 'nav-tab-active' : 'nav-tab'}`}
                   >
                     {n} {fmtMD(date)}
                   </button>
                 );
               })}
             </div>
-            <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-              <div className="border-b border-black/5 bg-primary-bg/40 px-3 py-2 text-center text-xs text-ink/40">
+            <div className="card overflow-hidden">
+              <div className="border-b border-border bg-page/40 px-3 py-2 text-center text-xs text-ink-muted">
                 08:00 – 21:00
               </div>
               {mobileTeacher && (
@@ -120,7 +118,7 @@ export default function TeachersOverviewPage() {
       </div>
 
       {data && data.teachers.length === 0 && !loading && (
-        <p className="rounded-2xl border border-dashed border-black/10 bg-white p-10 text-center text-sm text-ink/40">
+        <p className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center text-sm text-ink-muted">
           没有教师数据，先去基础数据里添加教师
         </p>
       )}

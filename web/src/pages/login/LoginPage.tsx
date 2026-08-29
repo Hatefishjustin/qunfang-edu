@@ -31,21 +31,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-primary-bg px-4">
+    <div className="flex min-h-screen items-center justify-center bg-page px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-2xl text-white">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-3xl text-white shadow-lg shadow-primary/25">
             群
           </div>
           <h1 className="text-2xl font-bold text-ink">群芳教育管理系统</h1>
-          <p className="mt-2 text-sm text-ink/60">排课 · 考勤 · 课时管理</p>
+          <p className="mt-2 text-sm text-ink-tertiary">排课 · 考勤 · 课时管理</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
-        >
-          <label className="block text-sm font-medium text-ink">
+        <form onSubmit={handleSubmit} className="card-elevated p-6">
+          <label className="block text-sm font-medium text-ink-secondary">
             手机号
             <input
               type="tel"
@@ -54,11 +51,11 @@ export default function LoginPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="请输入手机号"
-              className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="input mt-1.5 text-base"
             />
           </label>
 
-          <label className="mt-4 block text-sm font-medium text-ink">
+          <label className="mt-4 block text-sm font-medium text-ink-secondary">
             密码
             <input
               type="password"
@@ -66,18 +63,18 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入密码"
-              className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="input mt-1.5 text-base"
             />
           </label>
 
           {error && (
-            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+            <p className="mt-3 rounded-xl bg-error-soft px-3 py-2 text-sm text-error">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="mt-6 w-full rounded-lg bg-primary py-2.5 font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-60"
+            className="btn-primary mt-6 w-full py-2.5 text-base"
           >
             {submitting ? '登录中…' : '登录'}
           </button>

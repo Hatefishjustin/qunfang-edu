@@ -66,26 +66,26 @@ export default function RoomsPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-ink">教室管理</h1>
-          <p className="mt-1 text-sm text-ink/50">共 {data?.length ?? 0} 间教室</p>
+          <p className="mt-1 text-sm text-ink-tertiary">共 {data?.length ?? 0} 间教室</p>
         </div>
         <button
           onClick={() => {
             setForm({ name: '', capacity: '' });
             setModal({ mode: 'create' });
           }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 新建教室
         </button>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[480px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">教室</th>
               <th className="px-4 py-3 font-medium">容纳人数</th>
               <th className="px-4 py-3 text-right font-medium">操作</th>
@@ -93,22 +93,22 @@ export default function RoomsPage() {
           </thead>
           <tbody>
             {data?.map((r) => (
-              <tr key={r.id} className="border-b border-black/5 last:border-0">
+              <tr key={r.id} className="table-row">
                 <td className="px-4 py-3 font-medium text-ink">{r.name}</td>
-                <td className="px-4 py-3 text-ink/70">{r.capacity ?? '不限'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{r.capacity ?? '不限'}</td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => {
                       setForm({ name: r.name, capacity: r.capacity ? String(r.capacity) : '' });
                       setModal({ mode: 'edit', room: r });
                     }}
-                    className="mr-2 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-2 btn-secondary"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => void handleDelete(r)}
-                    className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                    className="btn-danger"
                   >
                     删除
                   </button>
@@ -117,7 +117,7 @@ export default function RoomsPage() {
             ))}
             {data?.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={3} className="px-4 py-10 text-center text-ink-muted">
                   暂无教室
                 </td>
               </tr>
@@ -139,7 +139,7 @@ export default function RoomsPage() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="如：美术教室A"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -149,21 +149,21 @@ export default function RoomsPage() {
                 min="1"
                 value={form.capacity}
                 onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '保存中…' : '保存'}
               </button>

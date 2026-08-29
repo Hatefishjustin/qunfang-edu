@@ -12,24 +12,24 @@ export default function WeekPicker({
     <div className="flex items-center gap-1">
       <button
         onClick={() => onChange(addDays(weekStart, -7))}
-        className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-sm text-ink/60 hover:bg-black/5"
+        className="btn-secondary px-2.5 py-1 text-sm"
         aria-label="上一周"
       >
         ‹
       </button>
-      <span className="min-w-[104px] text-center text-sm font-medium text-ink">
+      <span className="min-w-[104px] text-center text-sm font-semibold text-ink">
         {fmtMD(weekStart)} – {fmtMD(addDays(weekStart, 6))}
       </span>
       <button
         onClick={() => onChange(addDays(weekStart, 7))}
-        className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-sm text-ink/60 hover:bg-black/5"
+        className="btn-secondary px-2.5 py-1 text-sm"
         aria-label="下一周"
       >
         ›
       </button>
       <button
         onClick={() => onChange(mondayOf(todayStr()))}
-        className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-sm text-ink/60 hover:bg-black/5"
+        className="btn-secondary px-2.5 py-1 text-sm"
       >
         本周
       </button>

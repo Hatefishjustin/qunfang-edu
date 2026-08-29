@@ -69,23 +69,23 @@ export default function CampusesPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-ink">校区管理</h1>
-          <p className="mt-1 text-sm text-ink/50">共 {data?.length ?? 0} 个校区</p>
+          <p className="mt-1 text-sm text-ink-tertiary">共 {data?.length ?? 0} 个校区</p>
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 新建校区
         </button>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[600px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">校区</th>
               <th className="px-4 py-3 font-medium">地址</th>
               <th className="px-4 py-3 font-medium">电话</th>
@@ -95,23 +95,23 @@ export default function CampusesPage() {
           </thead>
           <tbody>
             {data?.map((c) => (
-              <tr key={c.id} className="border-b border-black/5 last:border-0">
+              <tr key={c.id} className="table-row">
                 <td className="px-4 py-3 font-medium text-ink">{c.name}</td>
-                <td className="px-4 py-3 text-ink/70">{c.address ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">{c.phone ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">
+                <td className="px-4 py-3 text-ink-secondary">{c.address ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{c.phone ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">
                   {c.teacher_count} / {c.student_count} / {c.class_count}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => openEdit(c)}
-                    className="mr-2 rounded-lg border border-black/10 px-3 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-2 btn-secondary"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => void handleDelete(c)}
-                    className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                    className="btn-danger"
                   >
                     删除
                   </button>
@@ -120,7 +120,7 @@ export default function CampusesPage() {
             ))}
             {data?.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={5} className="px-4 py-10 text-center text-ink-muted">
                   暂无校区
                 </td>
               </tr>
@@ -142,7 +142,7 @@ export default function CampusesPage() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="如：阳光广场校区"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -151,7 +151,7 @@ export default function CampusesPage() {
                 type="text"
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -160,21 +160,21 @@ export default function CampusesPage() {
                 type="tel"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '保存中…' : '保存'}
               </button>

@@ -86,25 +86,25 @@ export default function TeachersPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-ink">教师管理</h1>
-          <p className="mt-1 text-sm text-ink/50">
+          <p className="mt-1 text-sm text-ink-tertiary">
             共 {data?.length ?? 0} 位教师 · 负荷为本周已排课次数
           </p>
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 新建教师
         </button>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[680px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">姓名</th>
               <th className="px-4 py-3 font-medium">手机号</th>
               <th className="px-4 py-3 font-medium">科目</th>
@@ -115,35 +115,35 @@ export default function TeachersPage() {
           </thead>
           <tbody>
             {data?.map((t) => (
-              <tr key={t.id} className="border-b border-black/5 last:border-0">
+              <tr key={t.id} className="table-row">
                 <td className="px-4 py-3 font-medium text-ink">
                   {t.name}
                   {t.status === 'disabled' && (
-                    <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">
+                    <span className="ml-1.5 rounded-full bg-border-light px-1.5 py-0.5 text-xs text-ink-tertiary">
                       已禁用
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-ink/70">{t.phone}</td>
-                <td className="px-4 py-3 text-ink/70">{t.subject ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">{t.rule_count} 条</td>
-                <td className="px-4 py-3 text-ink/70">{t.week_load} 节</td>
+                <td className="px-4 py-3 text-ink-secondary">{t.phone}</td>
+                <td className="px-4 py-3 text-ink-secondary">{t.subject ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{t.rule_count} 条</td>
+                <td className="px-4 py-3 text-ink-secondary">{t.week_load} 节</td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
                   <button
                     onClick={() => setModal({ mode: 'availability', teacher: t })}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     可用时间
                   </button>
                   <button
                     onClick={() => openEdit(t)}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => void handleDelete(t)}
-                    className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                    className="btn-danger"
                   >
                     删除
                   </button>
@@ -152,7 +152,7 @@ export default function TeachersPage() {
             ))}
             {data?.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={6} className="px-4 py-10 text-center text-ink-muted">
                   暂无教师
                 </td>
               </tr>
@@ -174,7 +174,7 @@ export default function TeachersPage() {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -183,7 +183,7 @@ export default function TeachersPage() {
                 type="tel"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -193,7 +193,7 @@ export default function TeachersPage() {
                 value={form.subject}
                 onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 placeholder="如：美术"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             {modal.mode === 'create' && (
@@ -203,7 +203,7 @@ export default function TeachersPage() {
                   type="text"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="input mt-1.5"
                 />
               </label>
             )}
@@ -211,14 +211,14 @@ export default function TeachersPage() {
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '保存中…' : '保存'}
               </button>

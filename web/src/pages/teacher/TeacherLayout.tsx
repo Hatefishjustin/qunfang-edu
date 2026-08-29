@@ -12,22 +12,22 @@ export default function TeacherLayout() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="flex min-h-screen flex-col bg-primary-bg">
-      <header className="border-b border-black/5 bg-white">
+    <div className="flex min-h-screen flex-col bg-page">
+      <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
               群
             </div>
             <p className="font-bold text-ink">群芳教育 · 教师端</p>
           </div>
           {user && (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm text-ink/70 sm:inline">{user.name}</span>
+            <div className="flex items-center gap-2">
+              <span className="hidden text-sm text-ink-secondary sm:inline">{user.name}</span>
               <ChangePasswordButton />
               <button
                 onClick={() => void logout()}
-                className="rounded-lg border border-black/10 px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
+                className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:border-primary/30 hover:bg-primary-bg hover:text-primary"
               >
                 退出
               </button>
@@ -40,11 +40,7 @@ export default function TeacherLayout() {
               key={t.to}
               to={t.to}
               end={t.end}
-              className={({ isActive }) =>
-                `whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                  isActive ? 'bg-primary text-white' : 'text-ink/60 hover:bg-black/5'
-                }`
-              }
+              className={({ isActive }) => (isActive ? 'nav-tab-active' : 'nav-tab')}
             >
               {t.label}
             </NavLink>

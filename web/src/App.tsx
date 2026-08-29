@@ -31,8 +31,11 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-primary-bg text-ink/50">
-        加载中…
+      <div className="flex min-h-screen items-center justify-center bg-page text-ink-tertiary">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+          加载中…
+        </div>
       </div>
     );
   }
@@ -45,10 +48,13 @@ function RequireRole({ roles, children }: { roles: string[]; children: JSX.Eleme
   const { user } = useAuth();
   if (!user || !roles.includes(user.role)) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-primary-bg px-4 text-center">
-        <div>
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center">
+        <div className="card-elevated max-w-sm p-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning-soft text-2xl text-warning">
+            ✕
+          </div>
           <p className="text-lg font-semibold text-ink">没有访问权限</p>
-          <p className="mt-2 text-sm text-ink/50">当前账号角色无权查看此页面</p>
+          <p className="mt-2 text-sm text-ink-tertiary">当前账号角色无权查看此页面</p>
         </div>
       </div>
     );

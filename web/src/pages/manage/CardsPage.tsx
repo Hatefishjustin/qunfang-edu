@@ -76,33 +76,33 @@ export default function CardsPage() {
     }
   }
 
-  const inputCls =
-    'mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
+  const inputCls = 'input mt-1.5';
+  const selectCls = 'select mt-1.5';
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-ink">课时卡管理</h1>
-          <p className="mt-1 text-sm text-ink/50">
+          <p className="mt-1 text-sm text-ink-tertiary">
             共 {cards?.length ?? 0} 张卡 · 每笔变动都有流水记录
           </p>
         </div>
         <button
           onClick={() => setSellOpen(true)}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 售课
         </button>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">学员</th>
               <th className="px-4 py-3 font-medium">科目</th>
               <th className="px-4 py-3 font-medium">剩余 / 总课时</th>
@@ -116,10 +116,10 @@ export default function CardsPage() {
             {cards?.map((card) => {
               const balance = card.total_lessons - card.used_lessons;
               return (
-                <tr key={card.id} className="border-b border-black/5 last:border-0">
+                <tr key={card.id} className="table-row">
                   <td className="px-4 py-3 font-medium text-ink">{card.student_name}</td>
-                  <td className="px-4 py-3 text-ink/70">{card.course_name}</td>
-                  <td className="px-4 py-3 text-ink/70">
+                  <td className="px-4 py-3 text-ink-secondary">{card.course_name}</td>
+                  <td className="px-4 py-3 text-ink-secondary">
                     <span className="font-semibold text-primary">{balance}</span> / {card.total_lessons}
                   </td>
                   <td className="px-4 py-3">
@@ -132,16 +132,16 @@ export default function CardsPage() {
                       />
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-ink/70">{card.valid_until ?? '长期'}</td>
+                  <td className="px-4 py-3 text-ink-secondary">{card.valid_until ?? '长期'}</td>
                   <td className="px-4 py-3">
-                    <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs text-ink/60">
+                    <span className="badge-muted">
                       {CARD_STATUS_LABELS[card.status]}
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-right">
                     <button
                       onClick={() => setLedgerCard(card)}
-                      className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                      className="mr-1.5 btn-secondary"
                     >
                       流水
                     </button>
@@ -150,7 +150,7 @@ export default function CardsPage() {
                         setAdjustCard(card);
                         setAdjustForm({ change: '', note: '' });
                       }}
-                      className="rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                      className="btn-secondary"
                     >
                       调整
                     </button>
@@ -160,7 +160,7 @@ export default function CardsPage() {
             })}
             {cards?.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={7} className="px-4 py-10 text-center text-ink-muted">
                   还没有课时卡，点右上角「售课」创建第一张
                 </td>
               </tr>
@@ -178,7 +178,7 @@ export default function CardsPage() {
               <select
                 value={form.studentId}
                 onChange={(e) => setForm({ ...form, studentId: Number(e.target.value) })}
-                className={inputCls}
+                className={selectCls}
               >
                 <option value={0}>请选择学员</option>
                 {(students ?? []).map((s) => (
@@ -194,7 +194,7 @@ export default function CardsPage() {
               <select
                 value={form.courseId}
                 onChange={(e) => setForm({ ...form, courseId: Number(e.target.value) })}
-                className={inputCls}
+                className={selectCls}
               >
                 <option value={0}>请选择科目</option>
                 {(courses ?? []).map((co) => (
@@ -238,14 +238,14 @@ export default function CardsPage() {
               <button
                 type="button"
                 onClick={() => setSellOpen(false)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '创建中…' : '创建课时卡'}
               </button>
@@ -260,7 +260,7 @@ export default function CardsPage() {
           title={`课时调整 · ${adjustCard.student_name}（${adjustCard.course_name}）`}
           onClose={() => setAdjustCard(null)}
         >
-          <p className="mb-3 rounded-lg bg-primary-bg px-3 py-2 text-sm text-ink/60">
+          <p className="mb-3 rounded-xl bg-page px-3 py-2 text-sm text-ink-tertiary">
             当前剩余 {adjustCard.total_lessons - adjustCard.used_lessons} / {adjustCard.total_lessons} 节。
             正数增加（如赠送），负数减少（如纠错）。
           </p>
@@ -289,14 +289,14 @@ export default function CardsPage() {
               <button
                 type="button"
                 onClick={() => setAdjustCard(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '提交中…' : '确认调整'}
               </button>
@@ -322,21 +322,21 @@ function LedgerModal({ card, onClose }: { card: HourCard; onClose: () => void })
       title={`课时流水 · ${card.student_name}（${card.course_name}）`}
       onClose={onClose}
     >
-      {loading && <p className="text-sm text-ink/50">加载中…</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {loading && <p className="text-sm text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
       {data && data.length === 0 && (
-        <p className="px-3 py-6 text-center text-sm text-ink/40">暂无流水记录</p>
+        <p className="px-3 py-6 text-center text-sm text-ink-muted">暂无流水记录</p>
       )}
       {data && data.length > 0 && (
         <div className="space-y-1.5">
           {data.map((entry) => (
             <div
               key={entry.id}
-              className="flex items-center justify-between rounded-lg border border-black/5 px-3 py-2 text-sm"
+              className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm"
             >
               <div>
                 <p className="font-medium text-ink">{LEDGER_REASON_LABELS[entry.reason]}</p>
-                <p className="text-xs text-ink/40">
+                <p className="text-xs text-ink-muted">
                   {entry.created_at.slice(0, 16).replace('T', ' ')}
                   {entry.operator_name ? ` · ${entry.operator_name}` : ''}
                 </p>
@@ -344,13 +344,13 @@ function LedgerModal({ card, onClose }: { card: HourCard; onClose: () => void })
               <div className="text-right">
                 <p
                   className={`font-semibold ${
-                    entry.change > 0 ? 'text-primary' : 'text-red-600'
+                    entry.change > 0 ? 'text-primary' : 'text-error'
                   }`}
                 >
                   {entry.change > 0 ? '+' : ''}
                   {entry.change}
                 </p>
-                <p className="text-xs text-ink/40">余 {entry.balance_after}</p>
+                <p className="text-xs text-ink-muted">余 {entry.balance_after}</p>
               </div>
             </div>
           ))}

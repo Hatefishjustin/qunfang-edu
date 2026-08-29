@@ -60,7 +60,7 @@ function EnrollmentsModal({
           <select
             value={selected}
             onChange={(e) => setSelected(e.target.value)}
-            className="flex-1 rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="flex-1 select"
           >
             <option value="">选择要报班的学员…</option>
             {students?.map((s) => (
@@ -72,36 +72,36 @@ function EnrollmentsModal({
           </select>
           <button
             onClick={() => void enroll()}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+            className="btn-primary"
           >
             报班
           </button>
         </div>
 
         {loading ? (
-          <p className="text-sm text-ink/50">加载中…</p>
+          <p className="text-sm text-ink-tertiary">加载中…</p>
         ) : (
-          <div className="divide-y divide-black/5 rounded-lg border border-black/5">
+          <div className="divide-y divide-black/5 rounded-xl border border-border">
             {data?.map((e) => (
               <div key={e.student_id} className="flex items-center justify-between px-3 py-2.5">
                 <div>
                   <p className="text-sm font-medium text-ink">{e.name}</p>
-                  <p className="text-xs text-ink/40">{e.grade ?? ''}</p>
+                  <p className="text-xs text-ink-muted">{e.grade ?? ''}</p>
                 </div>
                 <button
                   onClick={() => void remove(e.student_id, e.name)}
-                  className="rounded-lg border border-red-200 px-2.5 py-1 text-xs text-red-600 hover:bg-red-50"
+                  className="rounded-xl border border-error-bg px-2.5 py-1 text-xs text-error hover:bg-error-soft"
                 >
                   退班
                 </button>
               </div>
             ))}
             {data?.length === 0 && (
-              <p className="px-3 py-6 text-center text-sm text-ink/40">暂无学员</p>
+              <p className="px-3 py-6 text-center text-sm text-ink-muted">暂无学员</p>
             )}
           </div>
         )}
-        <p className="text-xs text-ink/40">
+        <p className="text-xs text-ink-muted">
           已报 {data?.length ?? 0} / 容量 {cls.capacity} 人
         </p>
       </div>
@@ -176,26 +176,26 @@ export default function ClassesPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-ink">班级管理</h1>
-          <p className="mt-1 text-sm text-ink/50">共 {data?.length ?? 0} 个进行中班级</p>
+          <p className="mt-1 text-sm text-ink-tertiary">共 {data?.length ?? 0} 个进行中班级</p>
         </div>
         <button
           onClick={() => {
             setForm({ name: '', course_id: '', head_teacher_id: '', capacity: '12' });
             setModal({ mode: 'create' });
           }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 新建班级
         </button>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[720px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">班级</th>
               <th className="px-4 py-3 font-medium">课程</th>
               <th className="px-4 py-3 font-medium">主班老师</th>
@@ -205,7 +205,7 @@ export default function ClassesPage() {
           </thead>
           <tbody>
             {data?.map((cls) => (
-              <tr key={cls.id} className="border-b border-black/5 last:border-0">
+              <tr key={cls.id} className="table-row">
                 <td className="px-4 py-3">
                   <span
                     className="mr-2 inline-block h-3 w-3 rounded-sm align-middle"
@@ -213,15 +213,15 @@ export default function ClassesPage() {
                   />
                   <span className="font-medium text-ink">{cls.name}</span>
                 </td>
-                <td className="px-4 py-3 text-ink/70">{cls.course_name ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">{cls.head_teacher_name ?? '未指定'}</td>
-                <td className="px-4 py-3 text-ink/70">
+                <td className="px-4 py-3 text-ink-secondary">{cls.course_name ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{cls.head_teacher_name ?? '未指定'}</td>
+                <td className="px-4 py-3 text-ink-secondary">
                   {cls.enrolled_count} / {cls.capacity}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
                   <button
                     onClick={() => setModal({ mode: 'students', cls })}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     学员
                   </button>
@@ -235,13 +235,13 @@ export default function ClassesPage() {
                       });
                       setModal({ mode: 'edit', cls });
                     }}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => void handleArchive(cls)}
-                    className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                    className="btn-danger"
                   >
                     归档
                   </button>
@@ -250,7 +250,7 @@ export default function ClassesPage() {
             ))}
             {data?.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={5} className="px-4 py-10 text-center text-ink-muted">
                   暂无班级
                 </td>
               </tr>
@@ -278,7 +278,7 @@ export default function ClassesPage() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="如：周六美术基础A班"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -286,7 +286,7 @@ export default function ClassesPage() {
               <select
                 value={form.course_id}
                 onChange={(e) => setForm({ ...form, course_id: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary"
+                className="mt-1.5 w-full rounded-xl border border-border px-3 py-2 outline-none focus:border-primary"
               >
                 <option value="">请选择课程</option>
                 {courses?.map((co) => (
@@ -302,7 +302,7 @@ export default function ClassesPage() {
               <select
                 value={form.head_teacher_id}
                 onChange={(e) => setForm({ ...form, head_teacher_id: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary"
+                className="mt-1.5 w-full rounded-xl border border-border px-3 py-2 outline-none focus:border-primary"
               >
                 <option value="">不指定</option>
                 {teachers?.map((t) => (
@@ -320,24 +320,24 @@ export default function ClassesPage() {
                 min="1"
                 value={form.capacity}
                 onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
-            <p className="rounded-lg bg-primary-bg px-3 py-2 text-xs text-ink/50">
+            <p className="rounded-xl bg-page px-3 py-2 text-xs text-ink-tertiary">
               一对一课程 = 建容量为 1 的班级，只报 1 名学员即可。
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '保存中…' : '保存'}
               </button>

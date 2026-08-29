@@ -15,11 +15,11 @@ const MAX_FILES = 9;
 
 /** 留言者角色 → 展示标签（老师蓝 / 家长学生灰 / 管理员绿） */
 function roleBadge(role: Role): { label: string; cls: string } {
-  if (role === 'teacher') return { label: ROLE_LABELS.teacher, cls: 'bg-primary-light/30 text-primary' };
+  if (role === 'teacher') return { label: ROLE_LABELS.teacher, cls: 'bg-page text-primary' };
   if (role === 'campus_admin' || role === 'super_admin') {
-    return { label: ROLE_LABELS[role], cls: 'bg-emerald-100 text-emerald-700' };
+    return { label: ROLE_LABELS[role], cls: 'bg-success-bg text-success' };
   }
-  return { label: ROLE_LABELS[role], cls: 'bg-black/5 text-ink/60' };
+  return { label: ROLE_LABELS[role], cls: 'bg-border-light text-ink-tertiary' };
 }
 
 export default function LessonContentModal({
@@ -118,16 +118,16 @@ export default function LessonContentModal({
 
   return (
     <Modal title="课堂内容" onClose={onClose}>
-      {loading && <p className="text-sm text-ink/50">加载中…</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {loading && <p className="text-sm text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
       {data && lesson && (
         <div className="space-y-5 text-sm">
           {/* 课信息 */}
-          <div className="rounded-lg bg-primary-bg p-3">
+          <div className="rounded-xl bg-page p-3">
             <p className="font-medium text-ink">
               {lesson.course_name ?? lesson.class_name ?? '未命名课'}
             </p>
-            <p className="mt-1 text-xs text-ink/50">
+            <p className="mt-1 text-xs text-ink-tertiary">
               {fmtCN(lesson.date)} {WEEKDAY_NAMES[weekdayOf(lesson.date)]} {lesson.start_time}–
               {lesson.end_time}
               {lesson.teacher_name ? ` · ${lesson.teacher_name}` : ''}
@@ -143,7 +143,7 @@ export default function LessonContentModal({
                 <button
                   onClick={() => void saveNote()}
                   disabled={noteSaving || note === null}
-                  className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+                  className="btn-primary disabled:opacity-50"
                 >
                   {noteSaving ? '保存中…' : '保存'}
                 </button>
@@ -156,14 +156,14 @@ export default function LessonContentModal({
                 rows={4}
                 maxLength={2000}
                 placeholder="记录本节课学习内容、课堂表现、课后作业等…"
-                className="w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input"
               />
             ) : noteValue ? (
-              <p className="whitespace-pre-wrap rounded-lg border border-black/5 px-3 py-2 text-ink/80">
+              <p className="whitespace-pre-wrap rounded-xl border border-border px-3 py-2 text-ink-secondary">
                 {noteValue}
               </p>
             ) : (
-              <p className="rounded-lg border border-dashed border-black/10 px-3 py-2 text-xs text-ink/40">
+              <p className="rounded-xl border border-dashed border-border px-3 py-2 text-xs text-ink-muted">
                 老师还没有录入本节课内容
               </p>
             )}
@@ -178,7 +178,7 @@ export default function LessonContentModal({
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading || data.files.length >= MAX_FILES}
-                    className="rounded-lg border border-black/10 px-3 py-1 text-xs text-ink/70 hover:bg-black/5 disabled:opacity-50"
+                    className="rounded-xl border border-border px-3 py-1 text-xs text-ink-secondary hover:bg-border-light disabled:opacity-50"
                   >
                     {uploading ? '上传中…' : '+ 上传图片'}
                   </button>
@@ -193,7 +193,7 @@ export default function LessonContentModal({
               )}
             </div>
             {data.files.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-black/10 px-3 py-2 text-xs text-ink/40">
+              <p className="rounded-xl border border-dashed border-border px-3 py-2 text-xs text-ink-muted">
                 {data.can_edit ? '还没有图片，点击「上传图片」添加（自动压缩，单张 ≤ 400KB）' : '暂无课堂图片'}
               </p>
             ) : (
@@ -204,7 +204,7 @@ export default function LessonContentModal({
                       href={`/api/lessons/files/${f.id}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="block overflow-hidden rounded-lg border border-black/5"
+                      className="block overflow-hidden rounded-xl border border-border"
                     >
                       <img
                         src={`/api/lessons/files/${f.id}`}
@@ -213,13 +213,13 @@ export default function LessonContentModal({
                         className="aspect-square w-full object-cover"
                       />
                     </a>
-                    <span className="absolute bottom-1 left-1 rounded bg-black/50 px-1 text-[10px] text-white">
+                    <span className="absolute bottom-1 left-1 rounded bg-border-light0 px-1 text-[10px] text-white">
                       {fmtSize(f.size)}
                     </span>
                     {data.can_edit && (
                       <button
                         onClick={() => void deleteFile(f.id)}
-                        className="absolute right-1 top-1 hidden rounded bg-red-500/90 px-1.5 py-0.5 text-[10px] text-white group-hover:block"
+                        className="absolute right-1 top-1 hidden rounded bg-error-soft0/90 px-1.5 py-0.5 text-[10px] text-white group-hover:block"
                       >
                         删除
                       </button>
@@ -234,7 +234,7 @@ export default function LessonContentModal({
           <div>
             <p className="mb-1.5 font-medium text-ink">留言交流（{data.comments.length}）</p>
             {data.comments.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-black/10 px-3 py-2 text-xs text-ink/40">
+              <p className="rounded-xl border border-dashed border-border px-3 py-2 text-xs text-ink-muted">
                 还没有留言，有问题可以在这里向老师提问
               </p>
             ) : (
@@ -242,17 +242,17 @@ export default function LessonContentModal({
                 {data.comments.map((cm) => {
                   const badge = roleBadge(cm.role);
                   return (
-                    <li key={cm.id} className="rounded-lg border border-black/5 px-3 py-2">
+                    <li key={cm.id} className="rounded-xl border border-border px-3 py-2">
                       <p className="flex items-center gap-1.5">
                         <span className="font-medium text-ink">{cm.user_name ?? '已注销用户'}</span>
                         <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${badge.cls}`}>
                           {badge.label}
                         </span>
-                        <span className="ml-auto text-[10px] text-ink/40">
+                        <span className="ml-auto text-[10px] text-ink-muted">
                           {cm.created_at.slice(5, 16)}
                         </span>
                       </p>
-                      <p className="mt-1 whitespace-pre-wrap text-ink/80">{cm.content}</p>
+                      <p className="mt-1 whitespace-pre-wrap text-ink-secondary">{cm.content}</p>
                     </li>
                   );
                 })}
@@ -268,12 +268,12 @@ export default function LessonContentModal({
                 }}
                 maxLength={500}
                 placeholder={data.can_edit ? '回复家长/学生…' : '给老师留言…'}
-                className="flex-1 rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input flex-1"
               />
               <button
                 onClick={() => void sendComment()}
                 disabled={commentSending || !comment.trim()}
-                className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+                className="rounded-xl bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
               >
                 {commentSending ? '发送中…' : '发送'}
               </button>

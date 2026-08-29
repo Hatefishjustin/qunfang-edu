@@ -33,9 +33,9 @@ type StudentDetail = Student & {
 /** 状态徽章样式 */
 function StatusBadge({ status }: { status: StudentStatus }) {
   return status === 'active' ? (
-    <span className="rounded-full bg-primary-light/25 px-2 py-0.5 text-xs text-primary">在读</span>
+    <span className="badge-primary">在读</span>
   ) : (
-    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">待开发</span>
+    <span className="badge-warning">待开发</span>
   );
 }
 
@@ -112,7 +112,7 @@ export default function StudentsPage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-ink">学员管理</h1>
-          <p className="mt-1 text-sm text-ink/50">
+          <p className="mt-1 text-sm text-ink-tertiary">
             共 {data?.length ?? 0} 名学员
             {statusFilter !== 'all' ? `（${STUDENT_STATUS_LABELS[statusFilter]}）` : ''}
           </p>
@@ -121,7 +121,7 @@ export default function StudentsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as 'all' | StudentStatus)}
-            className="rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
+            className="select"
           >
             <option value="all">全部状态</option>
             <option value="active">在读</option>
@@ -132,27 +132,27 @@ export default function StudentsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="搜索姓名…"
-            className="rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
+            className="input"
           />
           <button
             onClick={() => {
               setForm({ name: '', grade: '', birth_date: '', note: '', status: 'active' });
               setModal({ mode: 'create' });
             }}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+            className="btn-primary"
           >
             + 新建学员
           </button>
         </div>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">姓名</th>
               <th className="px-4 py-3 font-medium">状态</th>
               <th className="px-4 py-3 font-medium">年级</th>
@@ -164,19 +164,19 @@ export default function StudentsPage() {
           </thead>
           <tbody>
             {data?.map((s) => (
-              <tr key={s.id} className="border-b border-black/5 last:border-0">
+              <tr key={s.id} className="table-row">
                 <td className="px-4 py-3 font-medium text-ink">{s.name}</td>
                 <td className="px-4 py-3">
                   <StatusBadge status={s.status} />
                 </td>
-                <td className="px-4 py-3 text-ink/70">{s.grade ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">{s.parent_names ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">{s.class_count} 个</td>
-                <td className="px-4 py-3 text-ink/70">{s.last_followup ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{s.grade ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{s.parent_names ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{s.class_count} 个</td>
+                <td className="px-4 py-3 text-ink-secondary">{s.last_followup ?? '—'}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
                   <button
                     onClick={() => setModal({ mode: 'detail', studentId: s.id })}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     详情
                   </button>
@@ -191,13 +191,13 @@ export default function StudentsPage() {
                       });
                       setModal({ mode: 'edit', student: s });
                     }}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => void handleDelete(s)}
-                    className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                    className="btn-danger"
                   >
                     删除
                   </button>
@@ -206,7 +206,7 @@ export default function StudentsPage() {
             ))}
             {data?.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={7} className="px-4 py-10 text-center text-ink-muted">
                   {search || statusFilter !== 'all' ? '没有匹配的学员' : '暂无学员'}
                 </td>
               </tr>
@@ -231,7 +231,7 @@ export default function StudentsPage() {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -239,7 +239,7 @@ export default function StudentsPage() {
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value as StudentStatus })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 bg-white px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               >
                 <option value="active">在读</option>
                 <option value="prospect">待开发</option>
@@ -252,7 +252,7 @@ export default function StudentsPage() {
                 value={form.grade}
                 onChange={(e) => setForm({ ...form, grade: e.target.value })}
                 placeholder="如：三年级"
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -261,7 +261,7 @@ export default function StudentsPage() {
                 type="date"
                 value={form.birth_date}
                 onChange={(e) => setForm({ ...form, birth_date: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -270,21 +270,21 @@ export default function StudentsPage() {
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
                 rows={2}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '保存中…' : '保存'}
               </button>
@@ -340,17 +340,17 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
 
   return (
     <Modal title={`学员详情 · ${data?.name ?? ''}`} onClose={onClose}>
-      {loading && <p className="text-sm text-ink/50">加载中…</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {loading && <p className="text-sm text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
       {data && (
         <div className="space-y-4 text-sm">
-          <div className="rounded-lg bg-primary-bg p-3">
+          <div className="rounded-xl bg-page p-3">
             <p className="flex items-center gap-2 font-medium text-ink">
               {data.name}
               <StatusBadge status={data.status} />
-              {data.grade ? <span className="text-xs text-ink/50">{data.grade}</span> : null}
+              {data.grade ? <span className="text-xs text-ink-tertiary">{data.grade}</span> : null}
             </p>
-            <p className="mt-1 text-xs text-ink/50">
+            <p className="mt-1 text-xs text-ink-tertiary">
               {data.birth_date ? `出生 ${data.birth_date}` : ''}
               {data.note ? ` · ${data.note}` : ''}
             </p>
@@ -359,7 +359,7 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
           <div>
             <p className="mb-1.5 font-medium text-ink">家长（{data.parents.length}）</p>
             {data.parents.length === 0 ? (
-              <p className="text-xs text-ink/40">未关联，去"家长"页添加</p>
+              <p className="text-xs text-ink-muted">未关联，去"家长"页添加</p>
             ) : (
               <div className="flex flex-wrap gap-1.5">
                 {data.parents.map((p) => (
@@ -375,13 +375,13 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
           <div>
             <p className="mb-1.5 font-medium text-ink">在读班级（{data.enrollments.length}）</p>
             {data.enrollments.length === 0 ? (
-              <p className="text-xs text-ink/40">未报班，去"班级"页报班</p>
+              <p className="text-xs text-ink-muted">未报班，去"班级"页报班</p>
             ) : (
               <ul className="space-y-1">
                 {data.enrollments.map((e) => (
-                  <li key={e.class_id} className="rounded-lg border border-black/5 px-3 py-2">
+                  <li key={e.class_id} className="rounded-xl border border-border px-3 py-2">
                     <span className="text-ink">{e.class_name}</span>
-                    <span className="ml-2 text-xs text-ink/50">{e.course_name}</span>
+                    <span className="ml-2 text-xs text-ink-tertiary">{e.course_name}</span>
                   </li>
                 ))}
               </ul>
@@ -391,13 +391,13 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
           <div>
             <p className="mb-1.5 font-medium text-ink">课时卡（{data.cards.length}）</p>
             {data.cards.length === 0 ? (
-              <p className="text-xs text-ink/40">暂无课时卡（售课功能将在后续里程碑开放）</p>
+              <p className="text-xs text-ink-muted">暂无课时卡（售课功能将在后续里程碑开放）</p>
             ) : (
               <ul className="space-y-1">
                 {data.cards.map((card) => (
-                  <li key={card.id} className="rounded-lg border border-black/5 px-3 py-2">
+                  <li key={card.id} className="rounded-xl border border-border px-3 py-2">
                     <span className="text-ink">{card.title ?? '课时卡'}</span>
-                    <span className="ml-2 text-xs text-ink/50">
+                    <span className="ml-2 text-xs text-ink-tertiary">
                       剩余 {card.total_lessons - card.used_lessons} / {card.total_lessons} 节
                     </span>
                   </li>
@@ -424,7 +424,7 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
                     });
                     setShowFollowupForm(true);
                   }}
-                  className="rounded-lg border border-primary/30 bg-primary/5 px-2.5 py-1 text-xs text-primary hover:bg-primary/10"
+                  className="rounded-xl border border-primary/30 bg-page px-2.5 py-1 text-xs text-primary hover:bg-primary-soft"
                 >
                   + 添加跟进
                 </button>
@@ -432,14 +432,14 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
             </div>
 
             {showFollowupForm && (
-              <form onSubmit={submitFollowup} className="mb-3 space-y-2 rounded-lg border border-primary/20 bg-primary-bg/30 p-3">
+              <form onSubmit={submitFollowup} className="mb-3 space-y-2 rounded-xl border border-primary/20 bg-page/30 p-3">
                 <label className="block text-xs font-medium text-ink">
                   联系时间
                   <input
                     type="datetime-local"
                     value={followupForm.contact_time}
                     onChange={(e) => setFollowupForm({ ...followupForm, contact_time: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-primary"
+                    className="input mt-1"
                   />
                 </label>
                 <label className="block text-xs font-medium text-ink">
@@ -449,7 +449,7 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
                     onChange={(e) => setFollowupForm({ ...followupForm, content: e.target.value })}
                     rows={2}
                     placeholder="如：电话沟通试听课意向，家长周五带娃到访…"
-                    className="mt-1 w-full rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-primary"
+                    className="input mt-1"
                   />
                 </label>
                 <label className="block text-xs font-medium text-ink">
@@ -458,21 +458,21 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
                     type="date"
                     value={followupForm.next_time}
                     onChange={(e) => setFollowupForm({ ...followupForm, next_time: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-primary"
+                    className="input mt-1"
                   />
                 </label>
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowFollowupForm(false)}
-                    className="rounded-lg border border-black/10 px-3 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="btn-secondary"
                   >
                     取消
                   </button>
                   <button
                     type="submit"
                     disabled={followupSaving}
-                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                    className="btn-primary disabled:opacity-60"
                   >
                     {followupSaving ? '保存中…' : '保存跟进'}
                   </button>
@@ -481,13 +481,13 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
             )}
 
             {data.followups.length === 0 && !showFollowupForm ? (
-              <p className="rounded-lg border border-dashed border-black/10 px-3 py-2 text-xs text-ink/40">
+              <p className="rounded-xl border border-dashed border-border px-3 py-2 text-xs text-ink-muted">
                 暂无跟进记录，点击「添加跟进」记录每次联系
               </p>
             ) : (
               <ul className="max-h-56 space-y-2 overflow-y-auto">
                 {data.followups.map((f) => (
-                  <li key={f.id} className="rounded-lg border border-black/5 px-3 py-2">
+                  <li key={f.id} className="rounded-xl border border-border px-3 py-2">
                     <p className="flex flex-wrap items-center gap-1.5 text-xs">
                       <span className="font-medium text-ink">{f.contact_time}</span>
                       {f.follower_name ? (
@@ -496,10 +496,10 @@ function StudentDetailModal({ studentId, onClose }: { studentId: number; onClose
                         </span>
                       ) : null}
                       {f.next_time ? (
-                        <span className="ml-auto text-[10px] text-amber-600">下次 {f.next_time}</span>
+                        <span className="ml-auto text-[10px] text-warning">下次 {f.next_time}</span>
                       ) : null}
                     </p>
-                    <p className="mt-1 whitespace-pre-wrap text-ink/80">{f.content}</p>
+                    <p className="mt-1 whitespace-pre-wrap text-ink-secondary">{f.content}</p>
                   </li>
                 ))}
               </ul>

@@ -7,27 +7,27 @@ export default function Layout({ nav, children }: { nav?: ReactNode; children: R
   const { user, logout } = useAuth();
 
   return (
-    <div className="flex min-h-screen flex-col bg-primary-bg">
-      <header className="border-b border-black/5 bg-white">
+    <div className="flex min-h-screen flex-col bg-page">
+      <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
               群
             </div>
             <div className="leading-tight">
               <p className="font-bold text-ink">群芳教育</p>
-              <p className="text-xs text-ink/50">
+              <p className="text-xs text-ink-tertiary">
                 {user ? ROLE_LABELS[user.role] : ''}
                 {user?.campusId === null && user?.role === 'super_admin' ? ' · 全局' : ''}
               </p>
             </div>
           </div>
           {user && (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm text-ink/70 sm:inline">{user.name}</span>
+            <div className="flex items-center gap-2">
+              <span className="hidden text-sm text-ink-secondary sm:inline">{user.name}</span>
               <button
                 onClick={() => void logout()}
-                className="rounded-lg border border-black/10 px-3 py-1.5 text-sm text-ink/70 transition-colors hover:bg-black/5"
+                className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:border-primary/30 hover:bg-primary-bg hover:text-primary"
               >
                 退出
               </button>

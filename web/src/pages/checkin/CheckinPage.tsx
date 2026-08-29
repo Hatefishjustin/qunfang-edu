@@ -14,8 +14,8 @@ import { WEEKDAY_NAMES } from '../../types';
 const STATUS_OPTIONS: AttendanceStatus[] = ['present', 'absent', 'leave'];
 const STATUS_STYLES: Record<AttendanceStatus, string> = {
   present: 'bg-primary text-white border-primary',
-  absent: 'bg-red-500 text-white border-red-500',
-  leave: 'bg-amber-500 text-white border-amber-500',
+  absent: 'bg-error text-white border-error',
+  leave: 'bg-warning text-white border-warning',
 };
 
 export default function CheckinPage() {
@@ -59,16 +59,16 @@ export default function CheckinPage() {
     }
   }
 
-  if (loading) return <p className="text-ink/50">加载中…</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
-  if (!data || !lesson) return <p className="text-ink/50">未找到这节课</p>;
+  if (loading) return <p className="text-ink-tertiary">加载中…</p>;
+  if (error) return <p className="text-error">{error}</p>;
+  if (!data || !lesson) return <p className="text-ink-tertiary">未找到这节课</p>;
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">点名</h1>
-          <p className="mt-1 text-sm text-ink/50">
+          <p className="mt-1 text-sm text-ink-tertiary">
             {lesson.class_name} · {fmtCN(lesson.date)} {WEEKDAY_NAMES[weekdayOf(lesson.date)]}{' '}
             {lesson.start_time}–{lesson.end_time} · {lesson.teacher_name}
           </p>
@@ -76,13 +76,13 @@ export default function CheckinPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setShowContent(true)}
-            className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-sm text-primary hover:bg-primary/10"
+            className="rounded-xl border border-primary/30 bg-page px-3 py-1.5 text-sm text-primary hover:bg-primary-soft"
           >
             课堂内容
           </button>
           <button
             onClick={() => navigate(-1)}
-            className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
+            className="btn-secondary"
           >
             返回
           </button>
@@ -94,14 +94,14 @@ export default function CheckinPage() {
       )}
 
       {done && (
-        <p className="mb-4 rounded-lg bg-primary-bg px-3 py-2 text-sm text-ink/70">
+        <p className="mb-4 rounded-xl bg-page px-3 py-2 text-sm text-ink-secondary">
           这节课已完成点名（如下为提交结果）。
         </p>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="card overflow-hidden">
         {data.students.length === 0 && (
-          <p className="px-4 py-10 text-center text-sm text-ink/40">
+          <p className="px-4 py-10 text-center text-sm text-ink-muted">
             这个班还没有学员，先去<Link to="/manage/classes" className="text-primary underline">班级管理</Link>报班
           </p>
         )}
@@ -111,14 +111,14 @@ export default function CheckinPage() {
           return (
             <div
               key={s.id}
-              className="flex flex-wrap items-center justify-between gap-2 border-b border-black/5 px-4 py-3 last:border-0"
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3 last:border-0"
             >
               <div>
                 <p className="font-medium text-ink">
                   {s.name}
-                  {s.grade ? <span className="ml-1 text-xs text-ink/40">{s.grade}</span> : null}
+                  {s.grade ? <span className="ml-1 text-xs text-ink-muted">{s.grade}</span> : null}
                 </p>
-                <p className="text-xs text-ink/40">
+                <p className="text-xs text-ink-muted">
                   该科目剩余 {s.balance} 节
                   {s.attendance?.deducted ? ' · 本次已扣 1 节' : ''}
                 </p>
@@ -129,10 +129,10 @@ export default function CheckinPage() {
                     key={st}
                     disabled={done}
                     onClick={() => setPicks({ ...picks, [s.id]: st })}
-                    className={`rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+                    className={`rounded-xl border px-3 py-1.5 text-sm transition-colors ${
                       current === st
                         ? STATUS_STYLES[st]
-                        : 'border-black/10 text-ink/60 hover:bg-black/5'
+                        : 'border-border text-ink-tertiary hover:bg-border-light'
                     } ${done ? 'cursor-default' : ''}`}
                   >
                     {ATTENDANCE_LABELS[st]}
@@ -149,7 +149,7 @@ export default function CheckinPage() {
           <button
             onClick={() => void submit()}
             disabled={submitting}
-            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+            className="btn-primary disabled:opacity-60"
           >
             {submitting ? '提交中…' : '提交点名'}
           </button>

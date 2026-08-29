@@ -49,14 +49,14 @@ export default function FamilySchedulePage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">课表</h1>
-          <p className="mt-1 text-sm text-ink/50">本周课程安排 · 点课可查看课堂内容</p>
+          <p className="mt-1 text-sm text-ink-tertiary">本周课程安排 · 点课可查看课堂内容</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {childIds.length > 1 && (
             <select
               value={childFilter ?? ''}
               onChange={(e) => setChildFilter(e.target.value ? Number(e.target.value) : null)}
-              className="rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-primary"
+              className="select"
             >
               <option value="">全部孩子</option>
               {childIds.map((id) => (
@@ -68,7 +68,7 @@ export default function FamilySchedulePage() {
           )}
           <button
             onClick={() => setView(view === 'grid' ? 'list' : 'grid')}
-            className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
+            className="btn-secondary"
           >
             {view === 'grid' ? '切换列表' : '切换周历'}
           </button>
@@ -76,8 +76,8 @@ export default function FamilySchedulePage() {
         </div>
       </div>
 
-      {loading && <p className="mb-2 text-ink/50">加载中…</p>}
-      {error && <p className="mb-2 text-red-600">{error}</p>}
+      {loading && <p className="mb-2 text-ink-tertiary">加载中…</p>}
+      {error && <p className="mb-2 text-error">{error}</p>}
 
       {view === 'grid' ? (
         <WeekGrid
@@ -88,31 +88,31 @@ export default function FamilySchedulePage() {
       ) : (
         <div className="space-y-4">
           {dates.length === 0 && !loading && (
-            <p className="rounded-2xl border border-dashed border-black/10 bg-white p-10 text-center text-sm text-ink/40">
+            <p className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center text-sm text-ink-muted">
               这一周没有课
             </p>
           )}
           {dates.map((date) => (
-            <div key={date} className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-              <p className="border-b border-black/5 bg-primary-bg/40 px-4 py-2 text-sm font-medium text-ink/70">
+            <div key={date} className="card overflow-hidden">
+              <p className="border-b border-border bg-page/40 px-4 py-2 text-sm font-medium text-ink-secondary">
                 {fmtCN(date)} {WEEKDAY_NAMES[weekdayOf(date)]}
                 {date === todayStr() && <span className="ml-2 text-xs text-primary">今天</span>}
               </p>
               {(byDate.get(date) ?? []).map((l) => (
                 <div
                   key={`${l.id}-${l.student_id ?? 0}`}
-                  className="flex items-center gap-3 border-b border-black/5 px-4 py-3 last:border-0"
+                  className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0"
                 >
                   <span className="w-[110px] shrink-0 text-sm font-medium text-ink">
                     {l.start_time}–{l.end_time}
                   </span>
-                  <span className="flex-1 truncate text-sm text-ink/80">
+                  <span className="flex-1 truncate text-sm text-ink-secondary">
                     {l.course_name ?? l.class_name}
                   </span>
-                  <span className="hidden text-xs text-ink/40 sm:inline">{l.teacher_name ?? ''}</span>
+                  <span className="hidden text-xs text-ink-muted sm:inline">{l.teacher_name ?? ''}</span>
                   <button
                     onClick={() => setContentLessonId(l.id)}
-                    className="shrink-0 rounded-lg border border-primary/30 bg-primary/5 px-2.5 py-1 text-xs text-primary hover:bg-primary/10"
+                    className="shrink-0 rounded-xl border border-primary/30 bg-page px-2.5 py-1 text-xs text-primary hover:bg-primary-soft"
                   >
                     内容
                   </button>

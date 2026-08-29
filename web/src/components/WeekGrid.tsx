@@ -69,18 +69,18 @@ export function WeekGrid({
   const totalMin = DAY_END - DAY_START;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+    <div className="table-container">
       <div className="min-w-[780px]">
         {/* 表头：星期 + 日期 */}
-        <div className="grid grid-cols-[52px_repeat(7,1fr)] border-b border-black/5 bg-primary-bg/40">
+        <div className="grid grid-cols-[52px_repeat(7,1fr)] border-b border-border bg-page/40">
           <div />
           {WEEKDAY_NAMES.map((name, i) => {
             const date = addDays(weekStart, i);
             const isToday = date === today;
             return (
               <div key={i} className="py-2 text-center">
-                <p className={`text-xs ${isToday ? 'font-bold text-primary' : 'text-ink/50'}`}>{name}</p>
-                <p className={`text-xs ${isToday ? 'font-bold text-primary' : 'text-ink/40'}`}>{fmtMD(date)}</p>
+                <p className={`text-xs ${isToday ? 'font-bold text-primary' : 'text-ink-tertiary'}`}>{name}</p>
+                <p className={`text-xs ${isToday ? 'font-bold text-primary' : 'text-ink-muted'}`}>{fmtMD(date)}</p>
               </div>
             );
           })}
@@ -91,7 +91,7 @@ export function WeekGrid({
             {HOURS.map((h) => (
               <div key={h} style={{ height: HOUR_H }} className="relative">
                 {h < 22 && (
-                  <span className="absolute -top-2 right-1.5 text-[10px] text-ink/40">
+                  <span className="absolute -top-2 right-1.5 text-[10px] text-ink-muted">
                     {String(h).padStart(2, '0')}:00
                   </span>
                 )}
@@ -105,7 +105,7 @@ export function WeekGrid({
               return (
                 <div
                   key={dayIndex}
-                  className={`relative border-l border-black/5 ${isToday ? 'bg-primary-bg/50' : ''} ${
+                  className={`relative border-l border-border ${isToday ? 'bg-page/50' : ''} ${
                     onCellClick ? 'cursor-copy' : ''
                   }`}
                   style={{ height: HOURS.length * HOUR_H }}
@@ -115,7 +115,7 @@ export function WeekGrid({
                   {HOURS.map((h) => (
                     <div
                       key={h}
-                      className="absolute inset-x-0 border-t border-black/5"
+                      className="absolute inset-x-0 border-t border-border"
                       style={{ top: `${((h * 60 - DAY_START) / totalMin) * 100}%` }}
                     />
                   ))}
@@ -199,7 +199,7 @@ export function TeacherDayCell({
 
   return (
     <div
-      className={`relative ${tall ? 'h-14' : 'h-10'} border-l border-black/5 ${onCellClick ? 'cursor-copy' : ''}`}
+      className={`relative ${tall ? 'h-14' : 'h-10'} border-l border-border ${onCellClick ? 'cursor-copy' : ''}`}
       onClick={(e) => onCellClick?.(teacher.id, date, cellTime(e))}
     >
       {/* 绿色：申报空闲 */}
@@ -258,17 +258,17 @@ export function TeacherGrid({
 }) {
   const today = todayStr();
   return (
-    <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+    <div className="table-container">
       <div className="min-w-[840px]">
         {/* 表头：时间刻度（08:00–21:00，每 2 小时一格） */}
-        <div className="grid grid-cols-[110px_repeat(7,1fr)] border-b border-black/5 bg-primary-bg/40">
-          <div className="px-3 py-2 text-xs text-ink/40">老师 \ 时间</div>
+        <div className="grid grid-cols-[110px_repeat(7,1fr)] border-b border-border bg-page/40">
+          <div className="px-3 py-2 text-xs text-ink-muted">老师 \ 时间</div>
           {WEEKDAY_NAMES.map((name, i) => {
             const date = addDays(weekStart, i);
             return (
               <div key={i} className="py-2 text-center">
-                <p className={`text-xs ${date === today ? 'font-bold text-primary' : 'text-ink/50'}`}>{name}</p>
-                <p className={`text-xs ${date === today ? 'font-bold text-primary' : 'text-ink/40'}`}>{fmtMD(date)}</p>
+                <p className={`text-xs ${date === today ? 'font-bold text-primary' : 'text-ink-tertiary'}`}>{name}</p>
+                <p className={`text-xs ${date === today ? 'font-bold text-primary' : 'text-ink-muted'}`}>{fmtMD(date)}</p>
               </div>
             );
           })}
@@ -277,11 +277,11 @@ export function TeacherGrid({
         {teachers.map((t) => (
           <div
             key={t.id}
-            className="grid grid-cols-[110px_repeat(7,1fr)] border-b border-black/5 last:border-0"
+            className="grid grid-cols-[110px_repeat(7,1fr)] table-row"
           >
             <div className="flex flex-col justify-center px-3 py-2">
               <p className="truncate text-sm font-medium text-ink">{t.name}</p>
-              <p className="truncate text-xs text-ink/40">{t.subject ?? ''}</p>
+              <p className="truncate text-xs text-ink-muted">{t.subject ?? ''}</p>
             </div>
             {WEEKDAY_NAMES.map((_, dayIndex) => (
               <TeacherDayCell
@@ -295,10 +295,10 @@ export function TeacherGrid({
           </div>
         ))}
         {teachers.length === 0 && (
-          <p className="px-4 py-10 text-center text-sm text-ink/40">该校区还没有教师</p>
+          <p className="px-4 py-10 text-center text-sm text-ink-muted">该校区还没有教师</p>
         )}
         {/* 底部时间刻度 */}
-        <div className="grid grid-cols-[110px_repeat(7,1fr)] border-t border-black/5 bg-primary-bg/30 text-[10px] text-ink/35">
+        <div className="grid grid-cols-[110px_repeat(7,1fr)] border-t border-border bg-page/30 text-[10px] text-ink-muted">
           <div className="px-3 py-1 text-right">08:00</div>
           <div className="py-1 text-left">10:00</div>
           <div className="py-1 text-left">12:00</div>

@@ -39,48 +39,41 @@ export default function ChangePasswordModal({ onClose }: { onClose: () => void }
   return (
     <Modal title="修改密码" onClose={onClose}>
       <div className="space-y-4">
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-ink/80">旧密码</span>
+        <label className="block text-sm font-medium text-ink-secondary">
+          旧密码
           <input
             type="password"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
-            className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="input mt-1.5"
             placeholder="请输入当前密码"
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-ink/80">新密码</span>
+        <label className="block text-sm font-medium text-ink-secondary">
+          新密码
           <input
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="input mt-1.5"
             placeholder="至少 6 位"
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-ink/80">确认新密码</span>
+        <label className="block text-sm font-medium text-ink-secondary">
+          确认新密码
           <input
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="input mt-1.5"
             placeholder="再输入一次新密码"
           />
         </label>
         <div className="flex justify-end gap-2 pt-2">
-          <button
-            onClick={onClose}
-            className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
-          >
+          <button onClick={onClose} className="btn-secondary">
             取消
           </button>
-          <button
-            onClick={() => void submit()}
-            disabled={saving}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50"
-          >
+          <button onClick={() => void submit()} disabled={saving} className="btn-primary">
             {saving ? '保存中…' : '保存'}
           </button>
         </div>
@@ -94,10 +87,7 @@ export function ChangePasswordButton() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-lg border border-black/10 px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
-      >
+      <button onClick={() => setOpen(true)} className="btn-secondary px-3 py-1.5 text-xs">
         改密
       </button>
       {open && <ChangePasswordModal onClose={() => setOpen(false)} />}

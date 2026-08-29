@@ -31,17 +31,14 @@ export default function RoleHomePage() {
   return (
     <Layout>
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-light/30 text-2xl">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-bg text-2xl text-primary shadow-sm">
           🌱
         </div>
         <h1 className="text-lg font-semibold text-ink">欢迎你，{user.name}</h1>
-        <p className="mt-2 text-sm text-ink/50">
+        <p className="mt-2 text-sm text-ink-tertiary">
           你的角色是「{ROLE_LABELS[user.role]}」，专属工作台将在后续里程碑开放
         </p>
-        <Link
-          to="/login"
-          className="mt-6 rounded-lg border border-black/10 bg-white px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
-        >
+        <Link to="/login" className="btn-secondary mt-6">
           返回登录页
         </Link>
       </div>

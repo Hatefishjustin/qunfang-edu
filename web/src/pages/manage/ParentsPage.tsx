@@ -92,26 +92,26 @@ export default function ParentsPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-ink">家长管理</h1>
-          <p className="mt-1 text-sm text-ink/50">共 {data?.length ?? 0} 名家长</p>
+          <p className="mt-1 text-sm text-ink-tertiary">共 {data?.length ?? 0} 名家长</p>
         </div>
         <button
           onClick={() => {
             setForm({ name: '', relation: '', phone: '', password: '', student_ids: [] });
             setModal({ mode: 'create' });
           }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="btn-primary"
         >
           + 新建家长
         </button>
       </div>
 
-      {loading && <p className="text-ink/50">加载中…</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-tertiary">加载中…</p>}
+      {error && <p className="text-error">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="table-container">
         <table className="w-full min-w-[680px] text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-ink/50">
+            <tr className="table-head">
               <th className="px-4 py-3 font-medium">姓名</th>
               <th className="px-4 py-3 font-medium">关系</th>
               <th className="px-4 py-3 font-medium">手机号（账号）</th>
@@ -121,11 +121,11 @@ export default function ParentsPage() {
           </thead>
           <tbody>
             {data?.map((p) => (
-              <tr key={p.id} className="border-b border-black/5 last:border-0">
+              <tr key={p.id} className="table-row">
                 <td className="px-4 py-3 font-medium text-ink">{p.name}</td>
-                <td className="px-4 py-3 text-ink/70">{p.relation ?? '—'}</td>
-                <td className="px-4 py-3 text-ink/70">{p.phone ?? '未开通登录'}</td>
-                <td className="px-4 py-3 text-ink/70">{p.student_names ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{p.relation ?? '—'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{p.phone ?? '未开通登录'}</td>
+                <td className="px-4 py-3 text-ink-secondary">{p.student_names ?? '—'}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
                   <button
                     onClick={() => {
@@ -139,13 +139,13 @@ export default function ParentsPage() {
                       });
                       setModal({ mode: 'edit', parent: p });
                     }}
-                    className="mr-1.5 rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-ink/70 hover:bg-black/5"
+                    className="mr-1.5 btn-secondary"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => void handleDelete(p)}
-                    className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                    className="btn-danger"
                   >
                     删除
                   </button>
@@ -154,7 +154,7 @@ export default function ParentsPage() {
             ))}
             {data?.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-ink/40">
+                <td colSpan={5} className="px-4 py-10 text-center text-ink-muted">
                   暂无家长
                 </td>
               </tr>
@@ -175,7 +175,7 @@ export default function ParentsPage() {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input mt-1.5"
               />
             </label>
             <label className="block text-sm font-medium text-ink">
@@ -183,7 +183,7 @@ export default function ParentsPage() {
               <select
                 value={form.relation}
                 onChange={(e) => setForm({ ...form, relation: e.target.value })}
-                className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary"
+                className="mt-1.5 w-full rounded-xl border border-border px-3 py-2 outline-none focus:border-primary"
               >
                 <option value="">未指定</option>
                 <option value="父亲">父亲</option>
@@ -201,7 +201,7 @@ export default function ParentsPage() {
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                     placeholder="11 位手机号"
-                    className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="input mt-1.5"
                   />
                 </label>
                 {form.phone && (
@@ -211,7 +211,7 @@ export default function ParentsPage() {
                       type="text"
                       value={form.password}
                       onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      className="input mt-1.5"
                     />
                   </label>
                 )}
@@ -225,26 +225,26 @@ export default function ParentsPage() {
                   {students.map((s) => (
                     <label
                       key={s.id}
-                      className="flex cursor-pointer items-center gap-2 rounded-lg border border-black/10 px-3 py-2 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5"
                     >
                       <input
                         type="checkbox"
                         checked={form.student_ids.includes(s.id)}
                         onChange={() => toggleStudent(s.id)}
-                        className="accent-[#2f6f4f]"
+                        className="accent-primary"
                       />
                       {s.name}
-                      {s.grade ? <span className="text-xs text-ink/40">{s.grade}</span> : null}
+                      {s.grade ? <span className="text-xs text-ink-muted">{s.grade}</span> : null}
                     </label>
                   ))}
                 </div>
               ) : (
-                <p className="mt-1 text-xs text-ink/40">本校区还没有学员，先去"学员"页添加</p>
+                <p className="mt-1 text-xs text-ink-muted">本校区还没有学员，先去"学员"页添加</p>
               )}
             </div>
 
             {modal.mode === 'edit' && (
-              <p className="rounded-lg bg-primary-bg px-3 py-2 text-xs text-ink/50">
+              <p className="rounded-xl bg-page px-3 py-2 text-xs text-ink-tertiary">
                 注意：保存后关联关系将按上面的勾选整表替换（不勾=解除全部关联）。
               </p>
             )}
@@ -253,14 +253,14 @@ export default function ParentsPage() {
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg border border-black/10 px-4 py-2 text-sm text-ink/70 hover:bg-black/5"
+                className="btn-secondary"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-60"
+                className="btn-primary disabled:opacity-60"
               >
                 {saving ? '保存中…' : '保存'}
               </button>

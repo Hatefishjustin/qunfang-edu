@@ -45,12 +45,12 @@ export default function MySchedulePage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">我的课表</h1>
-          <p className="mt-1 text-sm text-ink/50">点课块进入点名</p>
+          <p className="mt-1 text-sm text-ink-tertiary">点课块进入点名</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setView(view === 'grid' ? 'list' : 'grid')}
-            className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
+            className="btn-secondary"
           >
             {view === 'grid' ? '切换列表' : '切换周历'}
           </button>
@@ -58,8 +58,8 @@ export default function MySchedulePage() {
         </div>
       </div>
 
-      {loading && <p className="mb-2 text-ink/50">加载中…</p>}
-      {error && <p className="mb-2 text-red-600">{error}</p>}
+      {loading && <p className="mb-2 text-ink-tertiary">加载中…</p>}
+      {error && <p className="mb-2 text-error">{error}</p>}
 
       {view === 'grid' ? (
         <WeekGrid
@@ -73,37 +73,37 @@ export default function MySchedulePage() {
       ) : (
         <div className="space-y-4">
           {dates.length === 0 && !loading && (
-            <p className="rounded-2xl border border-dashed border-black/10 bg-white p-10 text-center text-sm text-ink/40">
+            <p className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center text-sm text-ink-muted">
               这一周还没有课
             </p>
           )}
           {dates.map((date) => (
-            <div key={date} className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-              <p className="border-b border-black/5 bg-primary-bg/40 px-4 py-2 text-sm font-medium text-ink/70">
+            <div key={date} className="card overflow-hidden">
+              <p className="border-b border-border bg-page/40 px-4 py-2 text-sm font-medium text-ink-secondary">
                 {fmtCN(date)} {WEEKDAY_NAMES[weekdayOf(date)]}
                 {date === todayStr() && <span className="ml-2 text-xs text-primary">今天</span>}
               </p>
               {(byDate.get(date) ?? []).map((l) => (
                 <div
                   key={l.id}
-                  className="flex w-full items-center gap-3 border-b border-black/5 px-4 py-3 text-left last:border-0"
+                  className="flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left last:border-0"
                 >
                   <button
                     onClick={() => navigate(`/checkin/${l.id}`)}
-                    className="flex min-w-0 flex-1 items-center gap-3 rounded-lg py-0.5 text-left hover:bg-black/[0.03]"
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-xl py-0.5 text-left hover:bg-border-light"
                   >
                     <span className="w-[110px] shrink-0 text-sm font-medium text-ink">
                       {l.start_time}–{l.end_time}
                     </span>
-                    <span className="flex-1 truncate text-sm text-ink/80">{l.class_name}</span>
+                    <span className="flex-1 truncate text-sm text-ink-secondary">{l.class_name}</span>
                     {l.status === 'done' && (
-                      <span className="rounded-full bg-primary-bg px-2 py-0.5 text-xs text-primary">已点名</span>
+                      <span className="badge-primary">已点名</span>
                     )}
-                    <span className="shrink-0 text-xs text-ink/40">{l.room_name ?? '未定教室'}</span>
+                    <span className="shrink-0 text-xs text-ink-muted">{l.room_name ?? '未定教室'}</span>
                   </button>
                   <button
                     onClick={() => setContentLessonId(l.id)}
-                    className="shrink-0 rounded-lg border border-primary/30 bg-primary/5 px-2.5 py-1 text-xs text-primary hover:bg-primary/10"
+                    className="shrink-0 rounded-xl border border-primary/30 bg-page px-2.5 py-1 text-xs text-primary hover:bg-primary-soft"
                   >
                     内容
                   </button>
