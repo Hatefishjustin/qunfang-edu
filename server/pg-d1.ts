@@ -27,6 +27,8 @@ export function translateDialect(sql: string): string {
   );
   // 同事务内取最近一次自增 id（D1 的写法 → PG 的 lastval）
   out = out.replace(/rowid\s*=\s*last_insert_rowid\(\)/g, 'id = lastval()');
+  // GROUP_CONCAT(expr, sep) → string_agg(expr, sep)：两者参数顺序与默认分隔符一致
+  out = out.replace(/\bGROUP_CONCAT\b/g, 'string_agg');
   // LIKE → ILIKE（SQLite 的 LIKE 不区分大小写，对齐）
   out = out.replace(/\bLIKE\b/g, 'ILIKE');
   return out;

@@ -1,4 +1,4 @@
-// 学员管理：CRUD（软删）+ 搜索 + 详情（家长 / 报班记录）
+// 学员管理：CRUD（软删）+ 搜索 + 状态（在读/待开发）+ 咨询师跟进记录 + 详情（家长 / 报班记录）
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { requireAuth } from '../middleware/auth';
@@ -6,13 +6,17 @@ import { requireRole } from '../middleware/roleGuard';
 import { queryCampus, writeCampus } from '../util/scope';
 import { readStr, readInt, isValidDate } from '../util/validate';
 
+export const STUDENT_STATUSES = ['active', 'prospect'] as const;
+export type StudentStatus = (typeof STUDENT_STATUSES)[number];
+
 export const studentRoutes = new Hono<AppEnv>();
 studentRoutes.use('*', requireAuth);
 
-// ---------- 列表（管理员 / teacher 受限只读）+ 搜索 ----------
+// ---------- 列表（管理员 / teacher 受限只读）+ 搜索 + 状态筛选 ----------
 studentRoutes.get('/', requireRole('super_admin', 'campus_admin', 'teacher'), async (c) => {
   const campusId = queryCampus(c);
   const search = readStr(c.req.query('search'));
+  const statusFilter = readStr(c.req.query('status'));
 
   const where = ['s.deleted_at IS NULL'];
   const binds: (string | number)[] = [];
@@ -24,14 +28,19 @@ studentRoutes.get('/', requireRole('super_admin', 'campus_admin', 'teacher'), as
     where.push('s.name LIKE ?');
     binds.push(`%${search}%`);
   }
+  if (statusFilter === 'active' || statusFilter === 'prospect') {
+    where.push('s.status = ?');
+    binds.push(statusFilter);
+  }
 
   const rows = await c.env.DB.prepare(
-    `SELECT s.id, s.campus_id, s.name, s.grade, s.birth_date, s.note, s.user_id,
+    `SELECT s.id, s.campus_id, s.name, s.grade, s.birth_date, s.note, s.user_id, s.status,
        (SELECT GROUP_CONCAT(p.name, '、') FROM parent_student ps
          JOIN parents p ON p.id = ps.parent_id AND p.deleted_at IS NULL
          WHERE ps.student_id = s.id) AS parent_names,
        (SELECT COUNT(*) FROM enrollments e
-         WHERE e.student_id = s.id AND e.status = 'active') AS class_count
+         WHERE e.student_id = s.id AND e.status = 'active') AS class_count,
+       (SELECT MAX(f.contact_time) FROM followups f WHERE f.student_id = s.id) AS last_followup
      FROM students s
      WHERE ${where.join(' AND ')}
      ORDER BY s.id DESC`,
@@ -45,8 +54,10 @@ studentRoutes.get('/', requireRole('super_admin', 'campus_admin', 'teacher'), as
       birth_date: string | null;
       note: string | null;
       user_id: number | null;
+      status: StudentStatus;
       parent_names: string | null;
       class_count: number;
+      last_followup: string | null;
     }>();
   return c.json(rows.results);
 });
@@ -58,7 +69,7 @@ studentRoutes.get('/:id', requireRole('super_admin', 'campus_admin'), async (c) 
 
   const me = c.get('user');
   const student = await c.env.DB.prepare(
-    'SELECT id, campus_id, name, grade, birth_date, note, user_id, created_at FROM students WHERE id = ? AND deleted_at IS NULL',
+    'SELECT id, campus_id, name, grade, birth_date, note, user_id, status, created_at FROM students WHERE id = ? AND deleted_at IS NULL',
   )
     .bind(id)
     .first<{
@@ -69,6 +80,7 @@ studentRoutes.get('/:id', requireRole('super_admin', 'campus_admin'), async (c) 
       birth_date: string | null;
       note: string | null;
       user_id: number | null;
+      status: StudentStatus;
       created_at: string;
     }>();
   if (!student) return c.json({ error: '学员不存在' }, 404);
@@ -76,7 +88,7 @@ studentRoutes.get('/:id', requireRole('super_admin', 'campus_admin'), async (c) 
     return c.json({ error: '学员不存在' }, 404);
   }
 
-  const [parents, enrollments, cards] = await c.env.DB.batch([
+  const [parents, enrollments, cards, followups] = await c.env.DB.batch([
     c.env.DB.prepare(
       `SELECT p.id, p.name, p.relation, p.user_id FROM parent_student ps
        JOIN parents p ON p.id = ps.parent_id AND p.deleted_at IS NULL
@@ -94,6 +106,11 @@ studentRoutes.get('/:id', requireRole('super_admin', 'campus_admin'), async (c) 
       `SELECT id, course_id, title, total_lessons, used_lessons, status, valid_until
        FROM hour_cards WHERE student_id = ? ORDER BY id DESC`,
     ).bind(id),
+    c.env.DB.prepare(
+      `SELECT f.id, f.contact_time, f.content, f.next_time, f.created_at, u.name AS follower_name
+       FROM followups f LEFT JOIN users u ON u.id = f.follower_id
+       WHERE f.student_id = ? ORDER BY f.contact_time DESC, f.id DESC`,
+    ).bind(id),
   ]);
 
   return c.json({
@@ -101,6 +118,7 @@ studentRoutes.get('/:id', requireRole('super_admin', 'campus_admin'), async (c) 
     parents: parents.results,
     enrollments: enrollments.results,
     cards: cards.results,
+    followups: followups.results,
   });
 });
 
@@ -118,11 +136,12 @@ studentRoutes.post('/', requireRole('super_admin', 'campus_admin'), async (c) =>
   const birthDate = readStr(b.birth_date);
   if (birthDate && !isValidDate(birthDate)) return c.json({ error: '出生日期格式不正确' }, 400);
   const note = readStr(b.note) || null;
+  const status = readStr(b.status) === 'prospect' ? 'prospect' : 'active';
 
   const r = await c.env.DB.prepare(
-    'INSERT INTO students (campus_id, name, grade, birth_date, note) VALUES (?, ?, ?, ?, ?)',
+    'INSERT INTO students (campus_id, name, grade, birth_date, note, status) VALUES (?, ?, ?, ?, ?, ?)',
   )
-    .bind(campusId, name, grade, birthDate || null, note)
+    .bind(campusId, name, grade, birthDate || null, note, status)
     .run();
   return c.json({ id: Number(r.meta.last_row_id) }, 201);
 });
@@ -177,6 +196,14 @@ studentRoutes.patch('/:id', requireRole('super_admin', 'campus_admin'), async (c
     sets.push('note = ?');
     binds.push(readStr(b.note) || null);
   }
+  if ('status' in b) {
+    const st = readStr(b.status);
+    if (st !== 'active' && st !== 'prospect') {
+      return c.json({ error: '学员状态只能是在读或待开发' }, 400);
+    }
+    sets.push('status = ?');
+    binds.push(st);
+  }
   if (sets.length === 0) return c.json({ error: '没有需要修改的字段' }, 400);
 
   binds.push(id);
@@ -200,4 +227,35 @@ studentRoutes.delete('/:id', requireRole('super_admin', 'campus_admin'), async (
   ];
   await c.env.DB.batch(stmts);
   return c.json({ ok: true });
+});
+
+// ---------- 新增跟进记录（咨询师 = 排课老师 / 校区管理员） ----------
+type FollowupBody = { contact_time?: unknown; content?: unknown; next_time?: unknown };
+
+studentRoutes.post('/:id/followups', requireRole('super_admin', 'campus_admin'), async (c) => {
+  const id = Number(c.req.param('id'));
+  if (!Number.isInteger(id) || id <= 0) return c.json({ error: '参数错误' }, 400);
+  const target = await findStudent(c, id);
+  if (!target) return c.json({ error: '学员不存在' }, 404);
+
+  const body = await c.req.json<FollowupBody>().catch(() => null);
+  const contactTime = typeof body?.contact_time === 'string' ? body.contact_time.trim() : '';
+  const content = typeof body?.content === 'string' ? body.content.trim() : '';
+  const nextTime = typeof body?.next_time === 'string' ? body.next_time.trim() : '';
+
+  if (!content) return c.json({ error: '请填写联系内容' }, 400);
+  // 联系时间：'YYYY-MM-DD HH:MM' 或 'YYYY-MM-DDTHH:MM'（datetime-local 原始值）
+  const contactNorm = contactTime.replace('T', ' ');
+  if (!/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2})?$/.test(contactNorm)) {
+    return c.json({ error: '联系时间格式不正确' }, 400);
+  }
+  if (nextTime && !isValidDate(nextTime)) return c.json({ error: '下次跟进日期格式不正确' }, 400);
+
+  const me = c.get('user');
+  const r = await c.env.DB.prepare(
+    'INSERT INTO followups (student_id, follower_id, contact_time, content, next_time) VALUES (?, ?, ?, ?, ?)',
+  )
+    .bind(id, me.id, contactNorm, content, nextTime || null)
+    .run();
+  return c.json({ id: Number(r.meta.last_row_id) }, 201);
 });

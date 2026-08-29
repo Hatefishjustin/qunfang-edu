@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, ApiError } from '../../api/client';
 import { useApiData } from '../../hooks/useApiData';
 import { useToast } from '../../components/Toast';
+import LessonContentModal from '../../components/LessonContentModal';
 import { ATTENDANCE_LABELS } from '../../types';
 import type { AttendanceStatus, CheckinData } from '../../types';
 import { fmtCN, weekdayOf } from '../../util/date';
@@ -28,6 +29,7 @@ export default function CheckinPage() {
   // 本地勾选状态：student_id → status
   const [picks, setPicks] = useState<Record<number, AttendanceStatus>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   const lesson = data?.lesson;
   const done = lesson?.status === 'done';
@@ -71,13 +73,25 @@ export default function CheckinPage() {
             {lesson.start_time}–{lesson.end_time} · {lesson.teacher_name}
           </p>
         </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
-        >
-          返回
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowContent(true)}
+            className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-sm text-primary hover:bg-primary/10"
+          >
+            课堂内容
+          </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-ink/70 hover:bg-black/5"
+          >
+            返回
+          </button>
+        </div>
       </div>
+
+      {showContent && lessonId && (
+        <LessonContentModal lessonId={Number(lessonId)} onClose={() => setShowContent(false)} />
+      )}
 
       {done && (
         <p className="mb-4 rounded-lg bg-primary-bg px-3 py-2 text-sm text-ink/70">

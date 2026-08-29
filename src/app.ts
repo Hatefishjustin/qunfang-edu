@@ -11,6 +11,7 @@ import { classRoutes } from './routes/classes';
 import { studentRoutes } from './routes/students';
 import { parentRoutes } from './routes/parents';
 import { lessonRoutes } from './routes/lessons';
+import { lessonContentRoutes } from './routes/lessonContent';
 import { scheduleRoutes } from './routes/schedule';
 import { cardRoutes } from './routes/cards';
 import { meRoutes } from './routes/me';
@@ -30,6 +31,7 @@ export function createApp() {
   app.route('/api/students', studentRoutes);
   app.route('/api/parents', parentRoutes);
   app.route('/api/lessons', lessonRoutes);
+  app.route('/api/lessons', lessonContentRoutes);
   app.route('/api/schedule', scheduleRoutes);
   app.route('/api/cards', cardRoutes);
   app.route('/api/me', meRoutes);

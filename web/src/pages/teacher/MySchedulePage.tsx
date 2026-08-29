@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApiData } from '../../hooks/useApiData';
 import WeekPicker from '../../components/WeekPicker';
+import LessonContentModal from '../../components/LessonContentModal';
 import { WeekGrid, courseColor } from '../../components/WeekGrid';
 import { WEEKDAY_NAMES } from '../../types';
 import type { Lesson } from '../../types';
@@ -11,6 +12,7 @@ import { addDays, fmtCN, mondayOf, todayStr, weekdayOf } from '../../util/date';
 export default function MySchedulePage() {
   const [weekStart, setWeekStart] = useState(mondayOf(todayStr()));
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [contentLessonId, setContentLessonId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const { data: lessons, loading, error } = useApiData<Lesson[]>(
@@ -82,24 +84,41 @@ export default function MySchedulePage() {
                 {date === todayStr() && <span className="ml-2 text-xs text-primary">今天</span>}
               </p>
               {(byDate.get(date) ?? []).map((l) => (
-                <button
+                <div
                   key={l.id}
-                  onClick={() => navigate(`/checkin/${l.id}`)}
-                  className="flex w-full items-center gap-3 border-b border-black/5 px-4 py-3 text-left last:border-0 hover:bg-black/[0.03]"
+                  className="flex w-full items-center gap-3 border-b border-black/5 px-4 py-3 text-left last:border-0"
                 >
-                  <span className="w-[110px] shrink-0 text-sm font-medium text-ink">
-                    {l.start_time}–{l.end_time}
-                  </span>
-                  <span className="flex-1 truncate text-sm text-ink/80">{l.class_name}</span>
-                  {l.status === 'done' && (
-                    <span className="rounded-full bg-primary-bg px-2 py-0.5 text-xs text-primary">已点名</span>
-                  )}
-                  <span className="text-xs text-ink/40">{l.room_name ?? '未定教室'}</span>
-                </button>
+                  <button
+                    onClick={() => navigate(`/checkin/${l.id}`)}
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-lg py-0.5 text-left hover:bg-black/[0.03]"
+                  >
+                    <span className="w-[110px] shrink-0 text-sm font-medium text-ink">
+                      {l.start_time}–{l.end_time}
+                    </span>
+                    <span className="flex-1 truncate text-sm text-ink/80">{l.class_name}</span>
+                    {l.status === 'done' && (
+                      <span className="rounded-full bg-primary-bg px-2 py-0.5 text-xs text-primary">已点名</span>
+                    )}
+                    <span className="shrink-0 text-xs text-ink/40">{l.room_name ?? '未定教室'}</span>
+                  </button>
+                  <button
+                    onClick={() => setContentLessonId(l.id)}
+                    className="shrink-0 rounded-lg border border-primary/30 bg-primary/5 px-2.5 py-1 text-xs text-primary hover:bg-primary/10"
+                  >
+                    内容
+                  </button>
+                </div>
               ))}
             </div>
           ))}
         </div>
+      )}
+
+      {contentLessonId !== null && (
+        <LessonContentModal
+          lessonId={contentLessonId}
+          onClose={() => setContentLessonId(null)}
+        />
       )}
     </div>
   );

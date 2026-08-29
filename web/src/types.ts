@@ -137,6 +137,13 @@ export type EnrollmentItem = {
 };
 
 // ---------- 学员 ----------
+export type StudentStatus = 'active' | 'prospect';
+
+export const STUDENT_STATUS_LABELS: Record<StudentStatus, string> = {
+  active: '在读',
+  prospect: '待开发',
+};
+
 export type Student = {
   id: number;
   campus_id: number;
@@ -145,8 +152,20 @@ export type Student = {
   birth_date: string | null;
   note: string | null;
   user_id: number | null;
+  status: StudentStatus;
   parent_names: string | null;
   class_count: number;
+  last_followup: string | null;
+};
+
+// ---------- 咨询师跟进记录 ----------
+export type Followup = {
+  id: number;
+  contact_time: string;
+  content: string;
+  next_time: string | null;
+  created_at: string;
+  follower_name: string | null;
 };
 
 // ---------- 家长 ----------
@@ -299,4 +318,40 @@ export type MyLesson = {
   course_color: string | null;
   teacher_name: string | null;
   room_name: string | null;
+};
+
+// ---------- 课堂内容（老师录入 / 家长学生查看留言） ----------
+export type LessonFileItem = {
+  id: number;
+  mime: string;
+  size: number;
+  created_at: string;
+};
+
+export type LessonCommentItem = {
+  id: number;
+  user_id: number;
+  role: Role;
+  content: string;
+  created_at: string;
+  user_name: string | null;
+};
+
+export type LessonContentData = {
+  lesson: {
+    id: number;
+    date: string;
+    start_time: string;
+    end_time: string;
+    status: string;
+    note: string | null;
+    class_name: string | null;
+    course_name: string | null;
+    course_color: string | null;
+    teacher_name: string | null;
+    room_name: string | null;
+  };
+  files: LessonFileItem[];
+  comments: LessonCommentItem[];
+  can_edit: boolean;
 };
