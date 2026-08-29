@@ -1,39 +1,44 @@
 @import "tailwindcss";
 
-/* 群芳教育 · 温暖现代艺术培训风色板 */
+/* 群芳教育 · 温暖现代艺术培训风色板（暖橙版） */
 @theme {
-  /* 品牌主色：温暖青绿，传递专业、安心与艺术感 */
-  --color-primary: #0d9488;
-  --color-primary-dark: #0f766e;
-  --color-primary-light: #2dd4bf;
-  --color-primary-soft: #ccfbf1;
-  --color-primary-bg: #f0fdfa;
+  /* 品牌主色：温暖橙调，传递艺术感、亲和力与活力 */
+  --color-primary: #f4a261;
+  --color-primary-dark: #e07a5f;
+  --color-primary-light: #f6b98a;
+  --color-primary-soft: #ffe8d6;
+  --color-primary-bg: #fff5eb;
 
-  /* 中性色：暖调石板灰，阅读更舒适 */
-  --color-ink: #1c1917;
-  --color-ink-secondary: #57534e;
-  --color-ink-tertiary: #78716c;
+  /* 中性色：柔和石板灰，阅读更舒适 */
+  --color-ink: #1c1c1e;
+  --color-ink-secondary: #3a3a3c;
+  --color-ink-tertiary: #8e8e93;
   --color-ink-muted: #a8a29e;
 
   /* 页面与表面 */
-  --color-page: #fafaf9;
+  --color-page: #f8f7f4;
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
-  --color-border: #e7e5e4;
-  --color-border-light: #f5f5f4;
+  --color-border: #e5e5ea;
+  --color-border-light: #f2f2f0;
 
   /* 功能色 */
   --color-accent: #f97316;
   --color-accent-bg: #fff7ed;
-  --color-success: #10b981;
-  --color-success-bg: #d1fae5;
-  --color-success-soft: #ecfdf5;
-  --color-warning: #f59e0b;
-  --color-warning-bg: #fef3c7;
+  --color-success: #34c759;
+  --color-success-bg: #e6f9ea;
+  --color-success-soft: #f0fdf4;
+  --color-warning: #ff9500;
+  --color-warning-bg: #fff4e5;
   --color-warning-soft: #fffbeb;
-  --color-error: #f43f5e;
-  --color-error-bg: #ffe4e6;
+  --color-error: #ff3b30;
+  --color-error-bg: #ffe5e3;
   --color-error-soft: #fff1f2;
+
+  /* 渐变与玻璃效果（非颜色 token，供自定义样式引用） */
+  --color-gradient-start: #ffd4b3;
+  --color-gradient-mid: #ffcdb2;
+  --color-gradient-end: #f8f7f4;
 }
 
 /* 全局基础 */
@@ -52,7 +57,7 @@ body {
 }
 
 @utility card-interactive {
-  @apply card transition-all duration-200 hover:shadow-md hover:border-primary/20 active:scale-[0.995];
+  @apply card transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5 active:scale-[0.995];
 }
 
 @utility card-elevated {
@@ -65,7 +70,7 @@ body {
 }
 
 @utility btn-primary {
-  @apply btn bg-primary text-white shadow-sm hover:bg-primary-dark hover:shadow-md active:scale-[0.98];
+  @apply btn bg-primary text-white shadow-sm hover:bg-primary-dark hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98];
 }
 
 @utility btn-secondary {
@@ -95,7 +100,7 @@ body {
 }
 
 @utility table-head {
-  @apply border-b border-border bg-page text-left text-xs font-semibold uppercase tracking-wider text-ink-tertiary;
+  @apply border-b border-border bg-border-light text-left text-xs font-semibold uppercase tracking-wider text-ink-tertiary;
 }
 
 @utility table-row {
@@ -120,7 +125,7 @@ body {
 }
 
 @utility badge-primary {
-  @apply badge bg-primary-bg text-primary;
+  @apply badge bg-primary-soft text-primary-dark;
 }
 
 @utility badge-muted {
@@ -139,6 +144,16 @@ body {
 /* 空状态 */
 @utility empty-state {
   @apply rounded-2xl border-2 border-dashed border-border bg-surface p-10 text-center text-sm text-ink-tertiary;
+}
+
+/* 登录页渐变背景 */
+@utility login-gradient {
+  background: linear-gradient(180deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 35%, var(--color-gradient-end) 70%);
+}
+
+/* Hero 渐变背景 */
+@utility hero-gradient {
+  background: linear-gradient(180deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 50%, var(--color-gradient-end) 100%);
 }
 
 /* 移动端优化：375px 优先 */

@@ -31,18 +31,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-page px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-3xl text-white shadow-lg shadow-primary/25">
-            群
-          </div>
-          <h1 className="text-2xl font-bold text-ink">群芳教育管理系统</h1>
-          <p className="mt-2 text-sm text-ink-tertiary">排课 · 考勤 · 课时管理</p>
+    <div className="login-gradient flex min-h-screen flex-col px-6 py-12">
+      <div className="flex flex-1 flex-col justify-center">
+        <div className="mx-auto mb-8 w-full max-w-sm">
+          <span className="mb-4 inline-flex w-fit rounded-full bg-white/60 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary-dark backdrop-blur-sm">
+            群芳教育 · 管理系统
+          </span>
+          <h1 className="font-serif text-4xl font-normal leading-tight tracking-tight text-ink">
+            记录每一次成长
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-ink-tertiary">
+            排课 · 考勤 · 课时管理，陪伴每一堂课。
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="card-elevated p-6">
-          <label className="block text-sm font-medium text-ink-secondary">
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto w-full max-w-sm rounded-3xl border border-border bg-surface p-6 shadow-lg"
+        >
+          <label className="block text-sm font-semibold text-ink">
             手机号
             <input
               type="tel"
@@ -51,11 +58,11 @@ export default function LoginPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="请输入手机号"
-              className="input mt-1.5 text-base"
+              className="input mt-2 h-12 px-4 text-base"
             />
           </label>
 
-          <label className="mt-4 block text-sm font-medium text-ink-secondary">
+          <label className="mt-4 block text-sm font-semibold text-ink">
             密码
             <input
               type="password"
@@ -63,22 +70,26 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入密码"
-              className="input mt-1.5 text-base"
+              className="input mt-2 h-12 px-4 text-base"
             />
           </label>
 
           {error && (
-            <p className="mt-3 rounded-xl bg-error-soft px-3 py-2 text-sm text-error">{error}</p>
+            <p className="mt-4 rounded-xl bg-error-soft px-3 py-2 text-sm text-error">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="btn-primary mt-6 w-full py-2.5 text-base"
+            className="btn-primary mt-6 h-12 w-full text-base shadow-primary hover:-translate-y-0.5"
           >
             {submitting ? '登录中…' : '登录'}
           </button>
         </form>
+
+        <p className="mt-6 text-center text-xs text-ink-muted">
+          仅用于艺术培训机构内部管理
+        </p>
       </div>
     </div>
   );

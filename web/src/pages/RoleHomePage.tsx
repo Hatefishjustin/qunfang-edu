@@ -31,8 +31,8 @@ export default function RoleHomePage() {
   return (
     <Layout>
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-bg text-2xl text-primary shadow-sm">
-          🌱
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-soft text-2xl text-primary-dark shadow-sm">
+          🎨
         </div>
         <h1 className="text-lg font-semibold text-ink">欢迎你，{user.name}</h1>
         <p className="mt-2 text-sm text-ink-tertiary">
