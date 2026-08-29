@@ -1,0 +1,1 @@
+{"domain":"*","routes":[{"path":"/","upstreamResourceType":"WEB_SCF","upstreamResourceName":"qunfang-server"}]}

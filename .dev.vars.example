@@ -1,0 +1,2 @@
+# 复制为 .dev.vars 并填入随机密钥（本地开发用，不入 git）
+JWT_SECRET=change-me-to-a-long-random-string

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+*.local
+cookies.txt
+.cloudbase-apikey.txt
+cloudbaserc.json
+cloudbase/functions/
+server/web-dist/

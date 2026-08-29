@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* 群芳教育 · 低饱和教育风色板 */
+@theme {
+  --color-primary: #2f6f4f;
+  --color-primary-light: #7c9a6e;
+  --color-primary-bg: #faf9f5;
+  --color-ink: #1f2a24;
+}

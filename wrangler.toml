@@ -1,0 +1,25 @@
+# 群芳教育管理系统 · Worker 配置
+name = "qunfang-edu"
+main = "src/index.ts"
+compatibility_date = "2026-08-28"
+
+# 前端静态资源（React SPA 构建产物），与后端同一个 Worker 托管
+[assets]
+directory = "./web/dist"
+binding = "ASSETS"
+# SPA 路由兜底：未命中静态资源时返回 index.html
+not_found_handling = "single-page-application"
+# API 请求必须先进 Worker（Hono），不能被 SPA 兜底吃掉
+run_worker_first = ["/api/*"]
+
+# D1 数据库（唯一持久化存储）
+[[d1_databases]]
+binding = "DB"
+database_name = "qunfang"
+database_id = "3fb83c02-7ec5-41e6-9656-8054f14079ac"
+migrations_dir = "migrations"
+
+# KV：会话吊销黑名单、登录失败计数（限流）
+[[kv_namespaces]]
+binding = "CACHE"
+id = "e7c022a6e12943e380d9d6f15755a524"
