@@ -8,11 +8,11 @@ export default function FamilyLayout({ title }: { title: string }) {
   const base = user?.role === 'parent' ? '/parent' : '/student';
 
   return (
-    <div className="flex min-h-screen flex-col bg-page">
-      <header className="border-b border-border bg-surface">
+    <div className="mobile-liquid-shell flex min-h-screen flex-col">
+      <header className="mobile-liquid-header">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+            <div className="brand-mark flex h-9 w-9 items-center justify-center rounded-xl">
               群
             </div>
             <p className="font-bold text-ink">群芳教育 · {title}</p>
@@ -23,14 +23,14 @@ export default function FamilyLayout({ title }: { title: string }) {
               <ChangePasswordButton />
               <button
                 onClick={() => void logout()}
-                className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:border-primary/30 hover:bg-primary-bg hover:text-primary"
+                className="btn-secondary px-3 py-1.5 text-xs"
               >
                 退出
               </button>
             </div>
           )}
         </div>
-        <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2">
+        <nav aria-label={`${title}主导航`} className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2">
           <NavLink to={base} end className={({ isActive }) => (isActive ? 'nav-tab-active' : 'nav-tab')}>
             课表
           </NavLink>
@@ -39,7 +39,7 @@ export default function FamilyLayout({ title }: { title: string }) {
           </NavLink>
         </nav>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+      <main className="app-design-main mx-auto w-full max-w-6xl flex-1 px-4 py-6">
         <Outlet />
       </main>
     </div>

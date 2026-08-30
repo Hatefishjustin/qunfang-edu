@@ -25,8 +25,8 @@ await build({
   logLevel: 'info',
 });
 
-// 前端静态资源
-cpSync('server/web-dist', path.join(outDir, 'web-dist'), { recursive: true });
+// 前端静态资源：cloudbase:build 会先生成最新的 web/dist
+cpSync('web/dist', path.join(outDir, 'web-dist'), { recursive: true });
 
 // 启动引导文件（必须 LF 行尾 + 固定文件名）
 writeFileSync(path.join(outDir, 'scf_bootstrap'), '#!/bin/bash\n/var/lang/node20/bin/node index.js\n', 'utf8');

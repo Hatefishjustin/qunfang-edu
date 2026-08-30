@@ -6,7 +6,7 @@ export default function AvailabilityPage() {
   const { user } = useAuth();
 
   return (
-    <div>
+    <div className="mobile-liquid-page">
       <h1 className="mb-1 text-xl font-bold text-ink">我的可用时间</h1>
       <p className="mb-4 text-sm text-ink-tertiary">
         申报你每周什么时间可以上课 / 不能上课，排课老师排课时会参照这份时间表。

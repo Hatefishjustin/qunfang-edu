@@ -16,14 +16,17 @@ export default function Modal({
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-surface p-6 shadow-2xl"
+        className="modal-glass max-h-[90vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl p-6"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-modal-title"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink">{title}</h2>
+          <h2 id="app-modal-title" className="text-lg font-semibold text-ink">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-xl px-2.5 py-1.5 text-ink-tertiary transition-colors hover:bg-border-light hover:text-ink"
+            className="btn-ghost min-h-9 px-2.5 py-1.5 text-ink-tertiary hover:text-ink"
             aria-label="关闭"
           >
             ✕

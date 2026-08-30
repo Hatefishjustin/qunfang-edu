@@ -59,12 +59,12 @@ export default function CheckinPage() {
     }
   }
 
-  if (loading) return <p className="text-ink-tertiary">加载中…</p>;
-  if (error) return <p className="text-error">{error}</p>;
-  if (!data || !lesson) return <p className="text-ink-tertiary">未找到这节课</p>;
+  if (loading) return <p className="app-design-shell flex min-h-screen items-center justify-center text-ink-tertiary">加载中…</p>;
+  if (error) return <p className="app-design-shell flex min-h-screen items-center justify-center text-error">{error}</p>;
+  if (!data || !lesson) return <p className="app-design-shell flex min-h-screen items-center justify-center text-ink-tertiary">未找到这节课</p>;
 
   return (
-    <div>
+    <div className="app-design-shell standalone-page-content min-h-screen px-4 py-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">点名</h1>
@@ -76,7 +76,7 @@ export default function CheckinPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setShowContent(true)}
-            className="rounded-xl border border-primary/30 bg-page px-3 py-1.5 text-sm text-primary hover:bg-primary-soft"
+            className="btn-secondary px-3 py-1.5 text-sm text-primary"
           >
             课堂内容
           </button>

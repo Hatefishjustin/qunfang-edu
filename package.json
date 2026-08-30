@@ -17,8 +17,8 @@
     "db:seed:local": "wrangler d1 execute qunfang --local --file=seed/seed.sql",
     "db:seed:remote": "wrangler d1 execute qunfang --remote --file=seed/seed.sql",
     "start": "tsx server/server.ts",
-    "cloudbase:build": "node scripts/build-cloudbase.mjs",
-    "cloudbase:deploy": "node scripts/build-cloudbase.mjs && node scripts/install-cloudbase-deps.mjs && node scripts/deploy-cloudbase-fn.mjs"
+    "cloudbase:build": "npm run build -w web && node scripts/build-cloudbase.mjs",
+    "cloudbase:deploy": "npm run cloudbase:build && node scripts/install-cloudbase-deps.mjs && node scripts/deploy-cloudbase-fn.mjs"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.4",

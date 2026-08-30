@@ -41,7 +41,7 @@ export default function MySchedulePage() {
   const dates = [...byDate.keys()].sort();
 
   return (
-    <div>
+    <div className="mobile-liquid-page">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">我的课表</h1>

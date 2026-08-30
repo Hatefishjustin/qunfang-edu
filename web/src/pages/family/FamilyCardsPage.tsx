@@ -9,7 +9,7 @@ export default function FamilyCardsPage() {
   const [expanded, setExpanded] = useState<number | null>(null);
 
   return (
-    <div>
+    <div className="mobile-liquid-page">
       <h1 className="mb-1 text-xl font-bold text-ink">课时卡</h1>
       <p className="mb-6 text-sm text-ink-tertiary">每张卡的剩余课时与变动记录</p>
 

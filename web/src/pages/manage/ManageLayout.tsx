@@ -40,16 +40,16 @@ export default function ManageLayout() {
     : (user?.campusId ?? null);
 
   return (
-    <div className="flex min-h-screen flex-col bg-page">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+    <div className="app-design-shell flex min-h-screen flex-col">
+      <header className="app-design-header">
+        <div className="app-design-header-row app-design-header-row-dense mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <div className="app-design-brand flex items-center gap-2.5">
+            <div className="brand-mark flex h-9 w-9 items-center justify-center rounded-xl">
               群
             </div>
             <p className="font-bold text-ink">群芳教育 · 校区管理</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="app-design-actions flex items-center gap-2">
             {isSuperAdmin && (
               <select
                 value={effectiveCampusId ?? ''}
@@ -70,7 +70,7 @@ export default function ManageLayout() {
                 <ChangePasswordButton />
                 <button
                   onClick={() => void logout()}
-                  className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:border-primary/30 hover:bg-primary-bg hover:text-primary"
+                  className="btn-secondary px-3 py-1.5 text-xs"
                 >
                   退出
                 </button>
@@ -78,7 +78,7 @@ export default function ManageLayout() {
             )}
           </div>
         </div>
-        <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2">
+        <nav aria-label="校区管理主导航" className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2">
           {TABS.map((t) => (
             <NavLink
               key={t.to}
@@ -90,7 +90,7 @@ export default function ManageLayout() {
           ))}
         </nav>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+      <main className="app-design-main mx-auto w-full max-w-6xl flex-1 px-4 py-6">
         <Outlet context={{ campusId: effectiveCampusId, isSuperAdmin } satisfies ManageContext} />
       </main>
     </div>

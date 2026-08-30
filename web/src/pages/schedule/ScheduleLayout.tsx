@@ -41,16 +41,16 @@ export default function ScheduleLayout() {
     : (user?.campusId ?? null);
 
   return (
-    <div className="flex min-h-screen flex-col bg-page">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+    <div className="app-design-shell flex min-h-screen flex-col">
+      <header className="app-design-header">
+        <div className="app-design-header-row app-design-header-row-dense mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <div className="app-design-brand flex items-center gap-2.5">
+            <div className="brand-mark flex h-9 w-9 items-center justify-center rounded-xl">
               群
             </div>
             <p className="font-bold text-ink">群芳教育 · 排课中心</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="app-design-actions flex items-center gap-2">
             {isSuperAdmin && (
               <select
                 value={effectiveCampusId ?? ''}
@@ -71,7 +71,7 @@ export default function ScheduleLayout() {
                 <ChangePasswordButton />
                 <button
                   onClick={() => void logout()}
-                  className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:border-primary/30 hover:bg-primary-bg hover:text-primary"
+                  className="btn-secondary px-3 py-1.5 text-xs"
                 >
                   退出
                 </button>
@@ -80,7 +80,7 @@ export default function ScheduleLayout() {
           </div>
         </div>
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 pb-2">
-          <nav className="flex gap-1 overflow-x-auto">
+          <nav aria-label="排课中心主导航" className="flex gap-1 overflow-x-auto">
             {TABS.map((t) => (
               <NavLink
                 key={t.to}
@@ -98,7 +98,7 @@ export default function ScheduleLayout() {
           <WeekPicker weekStart={weekStart} onChange={setWeekStart} />
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+      <main className="app-design-main mx-auto w-full max-w-6xl flex-1 px-4 py-6">
         <Outlet
           context={{ campusId: effectiveCampusId, isSuperAdmin, weekStart, setWeekStart } satisfies ScheduleContext}
         />

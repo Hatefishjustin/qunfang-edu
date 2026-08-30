@@ -45,7 +45,7 @@ export default function FamilySchedulePage() {
   const dates = [...byDate.keys()].sort();
 
   return (
-    <div>
+    <div className="mobile-liquid-page">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-bold text-ink">课表</h1>

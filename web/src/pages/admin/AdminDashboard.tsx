@@ -14,15 +14,16 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div>
-      <div className="hero-gradient -mx-4 -mt-6 mb-6 px-4 py-8 sm:-mx-4 sm:px-4 lg:-mx-4 lg:px-4">
+    <div className="admin-dashboard">
+      <div className="admin-glass-hero -mt-2 mb-8 px-6 py-9 sm:px-10 sm:py-12">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-serif text-3xl font-normal tracking-tight text-ink">全局看板</h1>
-              <p className="mt-2 text-sm text-ink-tertiary">各校区经营概览，点击卡片查看该校区账号</p>
+              <span className="admin-kicker text-[10px] font-semibold uppercase tracking-[0.16em]">今日 · 经营概览</span>
+              <h1 className="admin-display-title mt-4 text-3xl font-semibold text-ink sm:text-4xl">全局看板</h1>
+              <p className="mt-3 text-sm text-ink-secondary">各校区经营概览，点击卡片查看该校区账号</p>
             </div>
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-sm font-bold text-primary-dark shadow-sm">
+            <div className="glass-orb flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-primary-dark">
               管
             </div>
           </div>
@@ -30,20 +31,20 @@ export default function AdminDashboard() {
       </div>
 
       {data && data.length > 0 && (
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+        <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="glass-stat-card p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-ink-tertiary">校区总数</p>
             <p className="mt-2 text-2xl font-bold tracking-tight text-ink">{stats.campuses}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="glass-stat-card p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-ink-tertiary">在职教师</p>
             <p className="mt-2 text-2xl font-bold tracking-tight text-ink">{stats.teachers}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="glass-stat-card p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-ink-tertiary">在读学员</p>
             <p className="mt-2 text-2xl font-bold tracking-tight text-ink">{stats.students}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="glass-stat-card p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-ink-tertiary">进行中班级</p>
             <p className="mt-2 text-2xl font-bold tracking-tight text-ink">{stats.classes}</p>
           </div>
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <h2 className="mb-4 font-serif text-lg font-normal text-ink">校区概览</h2>
+      <h2 className="mb-5 text-xl font-semibold text-ink">校区概览</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data?.map((campus) => (
           <Link
@@ -78,15 +79,15 @@ export default function AdminDashboard() {
               <span className="badge-primary shrink-0">运营中</span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-2xl bg-border-light py-2.5">
+              <div className="glass-inset rounded-2xl py-2.5">
                 <p className="text-lg font-bold text-primary">{campus.teacher_count}</p>
                 <p className="text-xs text-ink-tertiary">教师</p>
               </div>
-              <div className="rounded-2xl bg-border-light py-2.5">
+              <div className="glass-inset rounded-2xl py-2.5">
                 <p className="text-lg font-bold text-primary">{campus.student_count}</p>
                 <p className="text-xs text-ink-tertiary">学员</p>
               </div>
-              <div className="rounded-2xl bg-border-light py-2.5">
+              <div className="glass-inset rounded-2xl py-2.5">
                 <p className="text-lg font-bold text-primary">{campus.class_count}</p>
                 <p className="text-xs text-ink-tertiary">班级</p>
               </div>
