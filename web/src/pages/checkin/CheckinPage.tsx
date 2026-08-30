@@ -1,11 +1,12 @@
 // 点名页：本节课学员列表，逐人 到课/缺勤/请假，一次提交（自动扣课）
 // teacher 只能点自己的课；campus_admin / super_admin 可代点任意本校区（super 全局）课
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, ApiError } from '../../api/client';
 import { useApiData } from '../../hooks/useApiData';
 import { useToast } from '../../components/Toast';
 import LessonContentModal from '../../components/LessonContentModal';
+import NotificationButton from '../../components/NotificationButton';
 import { ATTENDANCE_LABELS } from '../../types';
 import type { AttendanceStatus, CheckinData } from '../../types';
 import { fmtCN, weekdayOf } from '../../util/date';
@@ -33,6 +34,18 @@ export default function CheckinPage() {
 
   const lesson = data?.lesson;
   const done = lesson?.status === 'done';
+
+  useEffect(() => {
+    if (!data || data.lesson.status !== 'scheduled') return;
+    const preset: Record<number, AttendanceStatus> = {};
+    for (const student of data.students) {
+      const status = student.attendance?.status;
+      if (status === 'present' || status === 'absent' || status === 'leave') {
+        preset[student.id] = status;
+      }
+    }
+    setPicks(preset);
+  }, [data]);
 
   async function submit() {
     if (!data) return;
@@ -74,6 +87,7 @@ export default function CheckinPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <NotificationButton />
           <button
             onClick={() => setShowContent(true)}
             className="btn-secondary px-3 py-1.5 text-sm text-primary"

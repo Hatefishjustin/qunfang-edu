@@ -25,6 +25,8 @@ import CheckinPage from './pages/checkin/CheckinPage';
 import FamilyLayout from './pages/family/FamilyLayout';
 import FamilySchedulePage from './pages/family/FamilySchedulePage';
 import FamilyCardsPage from './pages/family/FamilyCardsPage';
+import FamilyRequestsPage from './pages/family/FamilyRequestsPage';
+import ScheduleRequestsPage from './pages/schedule/ScheduleRequestsPage';
 
 /** 未登录跳转登录页；会话恢复期间显示加载 */
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -114,6 +116,7 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="teachers" element={<TeachersOverviewPage />} />
         <Route path="calendar" element={<CalendarPage />} />
+        <Route path="requests" element={<ScheduleRequestsPage />} />
       </Route>
       <Route
         path="/teacher"
@@ -144,6 +147,7 @@ export default function App() {
       >
         <Route index element={<FamilySchedulePage />} />
         <Route path="cards" element={<FamilyCardsPage />} />
+        <Route path="requests" element={<FamilyRequestsPage />} />
       </Route>
       <Route
         path="/student"
@@ -155,6 +159,7 @@ export default function App() {
       >
         <Route index element={<FamilySchedulePage />} />
         <Route path="cards" element={<FamilyCardsPage />} />
+        <Route path="requests" element={<FamilyRequestsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

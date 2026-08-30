@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useApiData } from '../../hooks/useApiData';
 import WeekPicker from '../../components/WeekPicker';
 import LessonContentModal from '../../components/LessonContentModal';
+import ScheduleRequestModal from '../../components/ScheduleRequestModal';
 import { WeekGrid, courseColor } from '../../components/WeekGrid';
 import type { MyLesson } from '../../types';
 import { addDays, fmtCN, mondayOf, todayStr, weekdayOf } from '../../util/date';
@@ -11,7 +12,8 @@ import { WEEKDAY_NAMES } from '../../types';
 export default function FamilySchedulePage() {
   const [weekStart, setWeekStart] = useState(mondayOf(todayStr()));
   const [view, setView] = useState<'grid' | 'list'>('grid');
-  const [contentLessonId, setContentLessonId] = useState<number | null>(null);
+  const [contentLesson, setContentLesson] = useState<MyLesson | null>(null);
+  const [requestLesson, setRequestLesson] = useState<MyLesson | null>(null);
   const { data: lessons, loading, error } = useApiData<MyLesson[]>(
     `/api/me/lessons?from=${weekStart}&to=${addDays(weekStart, 6)}`,
   );
@@ -83,7 +85,10 @@ export default function FamilySchedulePage() {
         <WeekGrid
           weekStart={weekStart}
           blocks={blocks}
-          onBlockClick={(block) => setContentLessonId(block.id)}
+          onBlockClick={(block) => {
+            const lesson = visible.find((item) => item.id === block.id);
+            if (lesson) setContentLesson(lesson);
+          }}
         />
       ) : (
         <div className="space-y-4">
@@ -111,10 +116,16 @@ export default function FamilySchedulePage() {
                   </span>
                   <span className="hidden text-xs text-ink-muted sm:inline">{l.teacher_name ?? ''}</span>
                   <button
-                    onClick={() => setContentLessonId(l.id)}
+                    onClick={() => setContentLesson(l)}
                     className="shrink-0 rounded-xl border border-primary/30 bg-page px-2.5 py-1 text-xs text-primary hover:bg-primary-soft"
                   >
-                    内容
+                    反馈
+                  </button>
+                  <button
+                    onClick={() => setRequestLesson(l)}
+                    className="btn-secondary shrink-0 px-2.5 py-1 text-xs"
+                  >
+                    申请
                   </button>
                 </div>
               ))}
@@ -123,10 +134,24 @@ export default function FamilySchedulePage() {
         </div>
       )}
 
-      {contentLessonId !== null && (
+      {contentLesson !== null && (
         <LessonContentModal
-          lessonId={contentLessonId}
-          onClose={() => setContentLessonId(null)}
+          lessonId={contentLesson.id}
+          onClose={() => setContentLesson(null)}
+          onRequest={contentLesson.student_id
+            ? () => {
+                setRequestLesson(contentLesson);
+                setContentLesson(null);
+              }
+            : undefined}
+        />
+      )}
+      {requestLesson?.student_id && (
+        <ScheduleRequestModal
+          lesson={requestLesson}
+          studentId={requestLesson.student_id}
+          onClose={() => setRequestLesson(null)}
+          onSubmitted={() => undefined}
         />
       )}
     </div>

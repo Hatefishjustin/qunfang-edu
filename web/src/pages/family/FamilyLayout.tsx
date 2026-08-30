@@ -2,6 +2,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ChangePasswordButton } from '../../components/ChangePasswordModal';
+import NotificationButton from '../../components/NotificationButton';
 
 export default function FamilyLayout({ title }: { title: string }) {
   const { user, logout } = useAuth();
@@ -20,6 +21,7 @@ export default function FamilyLayout({ title }: { title: string }) {
           {user && (
             <div className="flex items-center gap-2">
               <span className="hidden text-sm text-ink-secondary sm:inline">{user.name}</span>
+              <NotificationButton />
               <ChangePasswordButton />
               <button
                 onClick={() => void logout()}
@@ -30,12 +32,15 @@ export default function FamilyLayout({ title }: { title: string }) {
             </div>
           )}
         </div>
-        <nav aria-label={`${title}主导航`} className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2">
+        <nav aria-label={`${title}主导航`} className="family-liquid-nav mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2">
           <NavLink to={base} end className={({ isActive }) => (isActive ? 'nav-tab-active' : 'nav-tab')}>
             课表
           </NavLink>
           <NavLink to={`${base}/cards`} className={({ isActive }) => (isActive ? 'nav-tab-active' : 'nav-tab')}>
             课时卡
+          </NavLink>
+          <NavLink to={`${base}/requests`} className={({ isActive }) => (isActive ? 'nav-tab-active' : 'nav-tab')}>
+            申请
           </NavLink>
         </nav>
       </header>

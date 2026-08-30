@@ -355,3 +355,63 @@ export type LessonContentData = {
   comments: LessonCommentItem[];
   can_edit: boolean;
 };
+
+// ---------- 调课 / 请假申请 ----------
+export type ScheduleRequestType = 'reschedule' | 'leave';
+export type ScheduleRequestStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
+
+export type ScheduleRequest = {
+  id: number;
+  campus_id: number;
+  lesson_id: number;
+  student_id: number;
+  requester_user_id: number;
+  request_type: ScheduleRequestType;
+  reason: string;
+  requested_date: string | null;
+  requested_start: string | null;
+  requested_end: string | null;
+  status: ScheduleRequestStatus;
+  review_note: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  lesson_date: string;
+  lesson_start: string;
+  lesson_end: string;
+  lesson_status: string;
+  student_name: string | null;
+  class_name: string | null;
+  course_name: string | null;
+  requester_name: string | null;
+  reviewer_name: string | null;
+};
+
+export const REQUEST_TYPE_LABELS: Record<ScheduleRequestType, string> = {
+  reschedule: '调课',
+  leave: '请假',
+};
+
+export const REQUEST_STATUS_LABELS: Record<ScheduleRequestStatus, string> = {
+  pending: '待审批',
+  approved: '已批准',
+  rejected: '未通过',
+  cancelled: '已取消',
+};
+
+// ---------- 站内通知 ----------
+export type NotificationItem = {
+  id: number;
+  type: string;
+  title: string;
+  content: string;
+  link: string | null;
+  related_lesson_id: number | null;
+  related_request_id: number | null;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type NotificationList = {
+  items: NotificationItem[];
+  unread_count: number;
+};

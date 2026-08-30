@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_LABELS } from '../types';
+import NotificationButton from './NotificationButton';
 
 export default function Layout({ nav, children }: { nav?: ReactNode; children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -25,6 +26,7 @@ export default function Layout({ nav, children }: { nav?: ReactNode; children: R
           {user && (
             <div className="flex items-center gap-2">
               <span className="hidden text-sm text-ink-secondary sm:inline">{user.name}</span>
+              <NotificationButton />
               <button
                 onClick={() => void logout()}
                 className="btn-secondary px-3 py-1.5 text-xs"

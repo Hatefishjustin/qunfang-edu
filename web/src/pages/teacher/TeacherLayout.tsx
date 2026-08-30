@@ -2,6 +2,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ChangePasswordButton } from '../../components/ChangePasswordModal';
+import NotificationButton from '../../components/NotificationButton';
 
 const TABS = [
   { to: '/teacher', label: '我的课表', end: true },
@@ -24,6 +25,7 @@ export default function TeacherLayout() {
           {user && (
             <div className="flex items-center gap-2">
               <span className="hidden text-sm text-ink-secondary sm:inline">{user.name}</span>
+              <NotificationButton />
               <ChangePasswordButton />
               <button
                 onClick={() => void logout()}

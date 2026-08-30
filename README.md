@@ -65,6 +65,7 @@ node scripts/smoke-test-m5.mjs http://localhost:8787   # 课时卡与考勤
 node scripts/smoke-test-m6.mjs http://localhost:8787   # 端到端验收（需先导入 seed）
 node scripts/smoke-test-r1.mjs http://localhost:8787   # 自助改密 + 校区看板
 node scripts/smoke-batch2.mjs http://localhost:8787    # 学员状态 / 跟进 / 课堂内容
+node scripts/smoke-r8.mjs http://localhost:8787        # 调课 / 请假 / 通知 / 课堂反馈权限
 ```
 
 脚本可传线上地址（如 `node scripts/smoke-test-r1.mjs https://qunfang-d6gfpeiow40f97899.service.tcloudbase.com`）做线上回归。

@@ -5,6 +5,11 @@ export function beijingToday(): string {
   return new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
 }
 
+/** 当前北京时间，存为系统约定的 YYYY-MM-DD HH:mm:ss 无时区字符串。 */
+export function beijingNow(): string {
+  return new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 19).replace('T', ' ');
+}
+
 /** 日期加 N 天 */
 export function addDays(date: string, days: number): string {
   const d = new Date(`${date}T00:00:00Z`);

@@ -7,6 +7,7 @@ import { checkLessonConflicts } from '../util/conflict';
 import { prepareDeduct, buildRefund } from '../util/hours';
 import { isValidDate, isValidTime, readStr, readInt } from '../util/validate';
 import { addDays, beijingToday, weekdayOf } from '../util/time';
+import { notifyLessonChange, upsertNotifications } from '../util/notifications';
 
 export const lessonRoutes = new Hono<AppEnv>();
 lessonRoutes.use('*', requireAuth);
@@ -220,7 +221,9 @@ lessonRoutes.post('/', requireRole('super_admin', 'campus_admin'), async (c) => 
   )
     .bind(ctx.campusId, classId, teacherId, roomId, date, start, end, finalNote, c.get('user').id)
     .run();
-  return c.json({ id: Number(r.meta.last_row_id) }, 201);
+  const id = Number(r.meta.last_row_id);
+  await notifyLessonChange(c.env.DB, id, c.get('user').id, 'created');
+  return c.json({ id }, 201);
 });
 
 // ---------- 按周批量建课（冲突整体回滚，不允许部分成功） ----------
@@ -287,7 +290,9 @@ lessonRoutes.post('/batch', requireRole('super_admin', 'campus_admin'), async (c
       'INSERT INTO lessons (campus_id, class_id, teacher_id, room_id, date, start_time, end_time, note, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
     ).bind(ctx.campusId, classId, teacherId, roomId, d, start, end, finalNote, c.get('user').id),
   );
-  await c.env.DB.batch(stmts);
+  const created = await c.env.DB.batch(stmts);
+  const firstId = Number(created[0]?.meta.last_row_id ?? 0);
+  if (firstId > 0) await notifyLessonChange(c.env.DB, firstId, c.get('user').id, 'created');
   return c.json({ created: dates.length, first_date: dates[0], last_date: dates[dates.length - 1] }, 201);
 });
 
@@ -339,6 +344,12 @@ lessonRoutes.patch('/:id', requireRole('super_admin', 'campus_admin'), async (c)
   const start = b.start_time !== undefined ? readStr(b.start_time) : lesson.start_time;
   const end = b.end_time !== undefined ? readStr(b.end_time) : lesson.end_time;
   const note = 'note' in b ? readStr(b.note) || null : lesson.note;
+  const scheduleChanged =
+    teacherId !== lesson.teacher_id ||
+    roomId !== lesson.room_id ||
+    date !== lesson.date ||
+    start !== lesson.start_time ||
+    end !== lesson.end_time;
 
   if (!isValidDate(date)) return c.json({ error: '日期格式不正确' }, 400);
   if (!isValidTime(start) || !isValidTime(end) || start >= end) {
@@ -374,11 +385,30 @@ lessonRoutes.patch('/:id', requireRole('super_admin', 'campus_admin'), async (c)
   const conflict = conflictResponse(report, false);
   if (conflict) return c.json(conflict, 409);
 
+  if (teacherId !== lesson.teacher_id) {
+    const oldTeacher = await c.env.DB.prepare(
+      "SELECT id, role, campus_id FROM users WHERE id = ? AND status = 'active' AND deleted_at IS NULL",
+    )
+      .bind(lesson.teacher_id)
+      .first<{ id: number; role: string; campus_id: number | null }>();
+    if (oldTeacher) {
+      await upsertNotifications(c.env.DB, [oldTeacher], {
+        campusId: lesson.campus_id,
+        type: 'lesson_rescheduled',
+        title: '课程已从你的课表移除',
+        content: `${lesson.date} ${lesson.start_time}-${lesson.end_time}`,
+        link: '/teacher',
+        relatedLessonId: id,
+      });
+    }
+  }
+
   await c.env.DB.prepare(
     'UPDATE lessons SET teacher_id = ?, room_id = ?, date = ?, start_time = ?, end_time = ?, note = ? WHERE id = ?',
   )
     .bind(teacherId, roomId, date, start, end, note, id)
     .run();
+  if (scheduleChanged) await notifyLessonChange(c.env.DB, id, me.id, 'rescheduled');
   return c.json({ ok: true });
 });
 
@@ -403,6 +433,7 @@ lessonRoutes.delete('/:id', requireRole('super_admin', 'campus_admin'), async (c
     ...refundStmts,
     c.env.DB.prepare("UPDATE lessons SET status = 'cancelled' WHERE id = ?").bind(id),
   ]);
+  await notifyLessonChange(c.env.DB, id, me.id, 'cancelled');
   return c.json({ ok: true, refunded: refundStmts.length / 3 });
 });
 

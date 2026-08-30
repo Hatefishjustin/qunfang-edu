@@ -1,9 +1,10 @@
-// 课堂内容：老师录入本节课内容（文字+图片），家长/学生查看并留言（师生交流）
+// 课堂反馈：仅本节课老师可录入文字、图片和留言，其他角色只读
 // 挂载前缀 /api/lessons（与 lessons.ts 同前缀，Hono 顺序匹配）
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { requireAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/roleGuard';
+import { notifyClassroomFeedback } from '../util/notifications';
 
 export const lessonContentRoutes = new Hono<AppEnv>();
 lessonContentRoutes.use('*', requireAuth);
@@ -66,14 +67,14 @@ async function myEnrolledStudentIds(
   return [];
 }
 
-/** 视角判定：view=能看内容/留言，edit=能改内容/传图删图 */
+/** 视角判定：view=能看反馈，edit=仅本节课老师能录入 */
 async function lessonView(
   c: { env: { DB: D1Database }; get: (k: 'user') => { id: number; role: string; campusId: number | null } },
   lesson: LessonCore,
 ): Promise<{ view: boolean; edit: boolean }> {
   const me = c.get('user');
-  if (me.role === 'super_admin') return { view: true, edit: true };
-  if (me.role === 'campus_admin') return { view: lesson.campus_id === me.campusId, edit: lesson.campus_id === me.campusId };
+  if (me.role === 'super_admin') return { view: true, edit: false };
+  if (me.role === 'campus_admin') return { view: lesson.campus_id === me.campusId, edit: false };
   if (me.role === 'teacher') {
     const own = lesson.teacher_id === me.id;
     return { view: own, edit: own };
@@ -145,32 +146,33 @@ lessonContentRoutes.get('/:id/content', async (c) => {
 });
 
 // ---------- 修改本节课内容（老师本人 / 管理员） ----------
-lessonContentRoutes.patch('/:id/note', requireRole('teacher', 'campus_admin', 'super_admin'), async (c) => {
+lessonContentRoutes.patch('/:id/note', requireRole('teacher'), async (c) => {
   const id = Number(c.req.param('id'));
   if (!Number.isInteger(id) || id <= 0) return c.json({ error: '参数错误' }, 400);
 
   const lesson = await loadLesson(c, id);
   if (!lesson) return c.json({ error: '课不存在' }, 404);
   const scope = await lessonView(c, lesson);
-  if (!scope.edit) return c.json({ error: '只有本节课的老师或管理员可以录入内容' }, 403);
+  if (!scope.edit) return c.json({ error: '只有本节课的老师可以录入内容' }, 403);
 
   const body = await c.req.json<{ note?: unknown }>().catch(() => null);
   const note = typeof body?.note === 'string' ? body.note.trim() : '';
   if (note.length > 2000) return c.json({ error: '课堂内容最多 2000 字' }, 400);
 
   await c.env.DB.prepare('UPDATE lessons SET note = ? WHERE id = ?').bind(note || null, id).run();
+  await notifyClassroomFeedback(c.env.DB, id, c.get('user').id);
   return c.json({ ok: true });
 });
 
 // ---------- 上传课堂图片（JSON base64，前端已压缩） ----------
-lessonContentRoutes.post('/:id/files', requireRole('teacher', 'campus_admin', 'super_admin'), async (c) => {
+lessonContentRoutes.post('/:id/files', requireRole('teacher'), async (c) => {
   const id = Number(c.req.param('id'));
   if (!Number.isInteger(id) || id <= 0) return c.json({ error: '参数错误' }, 400);
 
   const lesson = await loadLesson(c, id);
   if (!lesson) return c.json({ error: '课不存在' }, 404);
   const scope = await lessonView(c, lesson);
-  if (!scope.edit) return c.json({ error: '只有本节课的老师或管理员可以上传图片' }, 403);
+  if (!scope.edit) return c.json({ error: '只有本节课的老师可以上传图片' }, 403);
 
   const body = await c.req.json<{ mime?: unknown; data?: unknown }>().catch(() => null);
   const mime = typeof body?.mime === 'string' ? body.mime : '';
@@ -190,11 +192,12 @@ lessonContentRoutes.post('/:id/files', requireRole('teacher', 'campus_admin', 's
   )
     .bind(id, mime, Math.floor((data.length * 3) / 4), data, me.id)
     .run();
+  await notifyClassroomFeedback(c.env.DB, id, me.id);
   return c.json({ id: Number(r.meta.last_row_id) }, 201);
 });
 
-// ---------- 删除课堂图片（上传者本人 / 管理员） ----------
-lessonContentRoutes.delete('/:id/files/:fileId', requireRole('teacher', 'campus_admin', 'super_admin'), async (c) => {
+// ---------- 删除课堂图片（仅当前授课老师） ----------
+lessonContentRoutes.delete('/:id/files/:fileId', requireRole('teacher'), async (c) => {
   const id = Number(c.req.param('id'));
   const fileId = Number(c.req.param('fileId'));
   if (!Number.isInteger(id) || id <= 0 || !Number.isInteger(fileId) || fileId <= 0) {
@@ -203,15 +206,13 @@ lessonContentRoutes.delete('/:id/files/:fileId', requireRole('teacher', 'campus_
 
   const lesson = await loadLesson(c, id);
   if (!lesson) return c.json({ error: '课不存在' }, 404);
-  const me = c.get('user');
-  const file = await c.env.DB.prepare('SELECT id, uploaded_by FROM lesson_files WHERE id = ? AND lesson_id = ?')
+  const file = await c.env.DB.prepare('SELECT id FROM lesson_files WHERE id = ? AND lesson_id = ?')
     .bind(fileId, id)
-    .first<{ id: number; uploaded_by: number | null }>();
+    .first<{ id: number }>();
   if (!file) return c.json({ error: '图片不存在' }, 404);
 
   const scope = await lessonView(c, lesson);
-  const isOwner = me.role === 'teacher' && file.uploaded_by === me.id;
-  if (!scope.edit && !isOwner) return c.json({ error: '没有权限' }, 403);
+  if (!scope.edit) return c.json({ error: '没有权限' }, 403);
 
   await c.env.DB.prepare('DELETE FROM lesson_files WHERE id = ?').bind(fileId).run();
   return c.json({ ok: true });
@@ -251,15 +252,15 @@ lessonContentRoutes.get('/files/:fileId', async (c) => {
   });
 });
 
-// ---------- 课堂留言（老师 / 该班家长 / 该班学生 / 管理员） ----------
-lessonContentRoutes.post('/:id/comments', async (c) => {
+// ---------- 课堂留言（仅本节课老师） ----------
+lessonContentRoutes.post('/:id/comments', requireRole('teacher'), async (c) => {
   const id = Number(c.req.param('id'));
   if (!Number.isInteger(id) || id <= 0) return c.json({ error: '参数错误' }, 400);
 
   const lesson = await loadLesson(c, id);
   if (!lesson) return c.json({ error: '课不存在' }, 404);
   const scope = await lessonView(c, lesson);
-  if (!scope.view) return c.json({ error: '没有权限' }, 403);
+  if (!scope.edit) return c.json({ error: '没有权限' }, 403);
 
   const body = await c.req.json<{ content?: unknown }>().catch(() => null);
   const content = typeof body?.content === 'string' ? body.content.trim() : '';
@@ -272,5 +273,6 @@ lessonContentRoutes.post('/:id/comments', async (c) => {
   )
     .bind(id, me.id, me.role, content)
     .run();
+  await notifyClassroomFeedback(c.env.DB, id, me.id);
   return c.json({ id: Number(r.meta.last_row_id) }, 201);
 });

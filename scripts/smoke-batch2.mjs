@@ -39,7 +39,7 @@ const login = await fetch(`${base}/api/auth/login`, {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ phone: '13800000001', password: 'Passw0rd!' }),
 });
-const loginCookie =
+let loginCookie =
   (/(?:^|;\s*)token=([^;]+)/.exec(login.headers.get('set-cookie') ?? '')?.[1] ?? '');
 ok('登录 super_admin', login.status === 200 && loginCookie !== '');
 
@@ -157,18 +157,33 @@ ok('学员不存在 404', r.status === 404, JSON.stringify(r.data));
 
 console.log('\n===== 需求3：课堂内容（文字+图片+留言）=====');
 
-// 取一节课（super_admin 视角，任意校区的第一节课）
+// 取 9031 老师的一节课，后续切到该老师验证录入
 r = await jfetch('/api/lessons?from=2026-08-01&to=2026-12-31');
 const lessons = Array.isArray(r.data) ? r.data : [];
 ok('拿到课列表', lessons.length > 0, 'n=0');
-const lesson = lessons[0];
+const lesson = lessons.find((item) => item.teacher_id === 9031) ?? lessons[0];
 const lessonId = lesson?.id;
 
 // 内容详情
 r = await jfetch(`/api/lessons/${lessonId}/content`);
 ok('内容详情 200', r.status === 200, JSON.stringify(r.data)?.slice(0, 120));
-ok('详情含 can_edit=true（super_admin）', r.data?.can_edit === true);
+ok('详情含 can_edit=false（管理员只读）', r.data?.can_edit === false);
 ok('详情含 files/comments 数组', Array.isArray(r.data?.files) && Array.isArray(r.data?.comments));
+
+// 管理员不能代替老师输入
+r = await jfetch(`/api/lessons/${lessonId}/note`, {
+  method: 'PATCH',
+  body: JSON.stringify({ note: '管理员代写' }),
+});
+ok('管理员改内容 403', r.status === 403, JSON.stringify(r.data));
+
+const teacherLogin = await fetch(`${base}/api/auth/login`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ phone: '13800000011', password: 'Passw0rd!' }),
+});
+loginCookie = (/(?:^|;\s*)token=([^;]+)/.exec(teacherLogin.headers.get('set-cookie') ?? '')?.[1] ?? '');
+ok('本节课老师登录', teacherLogin.status === 200 && loginCookie !== '');
 
 // 修改内容
 r = await jfetch(`/api/lessons/${lessonId}/note`, {
@@ -219,7 +234,7 @@ ok(
   `status=${imgRes.status} type=${imgRes.headers.get('content-type')} len=${imgBuf.byteLength}`,
 );
 
-// 留言（super_admin）
+// 留言（本节课老师）
 r = await jfetch(`/api/lessons/${lessonId}/comments`, {
   method: 'POST',
   body: JSON.stringify({ content: '今天孩子状态不错，排线进步明显' }),
@@ -238,7 +253,7 @@ r = await jfetch(`/api/lessons/${lessonId}/content`);
 ok('留言已入库', r.data?.comments?.some((c) => c.content?.includes('排线进步明显')));
 ok(
   '留言带角色与姓名',
-  r.data?.comments?.some((c) => c.role === 'super_admin' && c.user_name === '超级管理员'),
+  r.data?.comments?.some((c) => c.role === 'teacher' && c.user_name === '张雨薇'),
 );
 
 // 删除图片
@@ -301,12 +316,12 @@ r = await pfetch(`/api/lessons/${myLessonId}/files`, {
 });
 ok('家长传图 403', r.status === 403, JSON.stringify(r.data));
 
-// 家长留言：可以
+// 家长留言：只读，不能输入
 r = await pfetch(`/api/lessons/${myLessonId}/comments`, {
   method: 'POST',
   body: JSON.stringify({ content: '老师好，请问这节课的作业是什么？' }),
 });
-ok('家长可留言', r.status === 201, JSON.stringify(r.data));
+ok('家长留言 403', r.status === 403, JSON.stringify(r.data));
 
 // 家长看别人校区课的内容：403（lesson 是阳光广场，家长 9051 也在阳光广场，这里改用一个不存在关联的课——用上面 lessonId 若同校区则跳过该校验）
 if (lessonId !== myLessonId) {

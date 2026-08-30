@@ -16,6 +16,8 @@ import { scheduleRoutes } from './routes/schedule';
 import { cardRoutes } from './routes/cards';
 import { meRoutes } from './routes/me';
 import { statsRoutes } from './routes/stats';
+import { notificationRoutes } from './routes/notifications';
+import { scheduleRequestRoutes } from './routes/scheduleRequests';
 
 export function createApp() {
   const app = new Hono<AppEnv>();
@@ -36,6 +38,8 @@ export function createApp() {
   app.route('/api/cards', cardRoutes);
   app.route('/api/me', meRoutes);
   app.route('/api/stats', statsRoutes);
+  app.route('/api/notifications', notificationRoutes);
+  app.route('/api/schedule-requests', scheduleRequestRoutes);
 
   // 健康检查（含一次数据库探测查询）
   app.get('/api/health', async (c) => {

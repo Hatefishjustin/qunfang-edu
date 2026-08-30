@@ -1,4 +1,4 @@
-// 课堂内容弹窗：老师端录入本节课内容（文字+图片），家长/学生查看并留言交流
+// 课堂反馈弹窗：仅老师录入文字、图片和留言，其他角色只读
 import { useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { api, ApiError } from '../api/client';
@@ -25,9 +25,11 @@ function roleBadge(role: Role): { label: string; cls: string } {
 export default function LessonContentModal({
   lessonId,
   onClose,
+  onRequest,
 }: {
   lessonId: number;
   onClose: () => void;
+  onRequest?: () => void;
 }) {
   const { data, loading, error, reload } = useApiData<LessonContentData>(
     `/api/lessons/${lessonId}/content`,
@@ -124,9 +126,16 @@ export default function LessonContentModal({
         <div className="space-y-5 text-sm">
           {/* 课信息 */}
           <div className="rounded-xl bg-page p-3">
-            <p className="font-medium text-ink">
-              {lesson.course_name ?? lesson.class_name ?? '未命名课'}
-            </p>
+            <div className="flex items-start justify-between gap-3">
+              <p className="font-medium text-ink">
+                {lesson.course_name ?? lesson.class_name ?? '未命名课'}
+              </p>
+              {onRequest && (
+                <button type="button" onClick={onRequest} className="btn-secondary shrink-0 px-3 py-1.5 text-xs">
+                  调课 / 请假
+                </button>
+              )}
+            </div>
             <p className="mt-1 text-xs text-ink-tertiary">
               {fmtCN(lesson.date)} {WEEKDAY_NAMES[weekdayOf(lesson.date)]} {lesson.start_time}–
               {lesson.end_time}
@@ -141,6 +150,7 @@ export default function LessonContentModal({
               <p className="font-medium text-ink">本节课内容</p>
               {data.can_edit && (
                 <button
+                  type="button"
                   onClick={() => void saveNote()}
                   disabled={noteSaving || note === null}
                   className="btn-primary disabled:opacity-50"
@@ -151,6 +161,9 @@ export default function LessonContentModal({
             </div>
             {data.can_edit ? (
               <textarea
+                name="lesson_note"
+                aria-label="本节课内容"
+                autoComplete="off"
                 value={noteValue}
                 onChange={(e) => setNote(e.target.value)}
                 rows={4}
@@ -176,6 +189,7 @@ export default function LessonContentModal({
               {data.can_edit && (
                 <>
                   <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading || data.files.length >= MAX_FILES}
                     className="rounded-xl border border-border px-3 py-1 text-xs text-ink-secondary hover:bg-border-light disabled:opacity-50"
@@ -185,6 +199,8 @@ export default function LessonContentModal({
                   <input
                     ref={fileInputRef}
                     type="file"
+                    name="lesson_image"
+                    aria-label="上传课堂图片"
                     accept="image/*"
                     className="hidden"
                     onChange={(e) => void uploadFile(e)}
@@ -209,17 +225,20 @@ export default function LessonContentModal({
                       <img
                         src={`/api/lessons/files/${f.id}`}
                         alt="课堂图片"
+                        width="320"
+                        height="320"
                         loading="lazy"
                         className="aspect-square w-full object-cover"
                       />
                     </a>
-                    <span className="absolute bottom-1 left-1 rounded bg-border-light0 px-1 text-[10px] text-white">
+                    <span className="absolute bottom-1 left-1 rounded bg-ink/70 px-1 text-[10px] text-surface">
                       {fmtSize(f.size)}
                     </span>
                     {data.can_edit && (
                       <button
+                        type="button"
                         onClick={() => void deleteFile(f.id)}
-                        className="absolute right-1 top-1 hidden rounded bg-error-soft0/90 px-1.5 py-0.5 text-[10px] text-white group-hover:block"
+                        className="absolute right-1 top-1 rounded bg-error/90 px-1.5 py-0.5 text-[10px] text-surface sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                       >
                         删除
                       </button>
@@ -230,12 +249,12 @@ export default function LessonContentModal({
             )}
           </div>
 
-          {/* 师生留言 */}
+          {/* 老师留言 */}
           <div>
-            <p className="mb-1.5 font-medium text-ink">留言交流（{data.comments.length}）</p>
+            <p className="mb-1.5 font-medium text-ink">老师留言（{data.comments.length}）</p>
             {data.comments.length === 0 ? (
               <p className="rounded-xl border border-dashed border-border px-3 py-2 text-xs text-ink-muted">
-                还没有留言，有问题可以在这里向老师提问
+                老师还没有补充留言
               </p>
             ) : (
               <ul className="max-h-48 space-y-2 overflow-y-auto">
@@ -258,26 +277,32 @@ export default function LessonContentModal({
                 })}
               </ul>
             )}
-            <div className="mt-2 flex gap-2">
-              <input
-                type="text"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') void sendComment();
-                }}
-                maxLength={500}
-                placeholder={data.can_edit ? '回复家长/学生…' : '给老师留言…'}
-                className="input flex-1"
-              />
-              <button
-                onClick={() => void sendComment()}
-                disabled={commentSending || !comment.trim()}
-                className="rounded-xl bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
-              >
-                {commentSending ? '发送中…' : '发送'}
-              </button>
-            </div>
+            {data.can_edit && (
+              <div className="mt-2 flex gap-2">
+                <input
+                  type="text"
+                  name="teacher_message"
+                  aria-label="老师留言"
+                  autoComplete="off"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') void sendComment();
+                  }}
+                  maxLength={500}
+                  placeholder="补充给家长和学生的留言…"
+                  className="input flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => void sendComment()}
+                  disabled={commentSending || !comment.trim()}
+                  className="btn-primary px-4 py-2 text-xs disabled:opacity-50"
+                >
+                  {commentSending ? '发送中…' : '发送'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useApiData } from '../../hooks/useApiData';
 import WeekPicker from '../../components/WeekPicker';
 import { ChangePasswordButton } from '../../components/ChangePasswordModal';
+import NotificationButton from '../../components/NotificationButton';
 import { mondayOf, todayStr } from '../../util/date';
 import type { Campus } from '../../types';
 
@@ -13,6 +14,7 @@ const TABS: { to: string; label: string; end?: boolean }[] = [
   { to: '/schedule', label: '校区看板', end: true },
   { to: '/schedule/teachers', label: '忙闲总览' },
   { to: '/schedule/calendar', label: '排课周历' },
+  { to: '/schedule/requests', label: '申请审批' },
 ];
 
 export type ScheduleContext = {
@@ -68,6 +70,7 @@ export default function ScheduleLayout() {
             {user && (
               <>
                 <span className="hidden text-sm text-ink-secondary sm:inline">{user.name}</span>
+                <NotificationButton />
                 <ChangePasswordButton />
                 <button
                   onClick={() => void logout()}
