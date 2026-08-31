@@ -1,6 +1,6 @@
 // WeekGrid 核心周历组件（自研，不依赖日历库）：
 // - WeekGrid：时段 × 星期 网格（排课周历 / 我的课表）
-// - TeacherGrid：教师 × 星期 忙闲总览（行=老师，格内为当日横向时间轴）
+// - TeacherGrid：教师 × 星期 忙闲总览（行=老师，格内为忙闲条与课程列表）
 // - TeacherDayCell：单老师单日时间轴（移动端总览用，也可放大显示）
 import type { MouseEvent } from 'react';
 import { WEEKDAY_NAMES } from '../types';
@@ -244,7 +244,97 @@ export function TeacherDayCell({
   );
 }
 
-/** 总览网格：每行一位老师，左侧姓名+科目，右侧 7 天迷你时间轴 */
+/** 桌面周视图单元格：忙闲时间带保留时间定位，课程改为可读列表。 */
+function TeacherWeekCell({
+  teacher,
+  date,
+  onCellClick,
+  onLessonClick,
+}: {
+  teacher: OverviewTeacher;
+  date: string;
+  onCellClick?: (teacherId: number, date: string, time: string) => void;
+  onLessonClick?: (lesson: Lesson) => void;
+}) {
+  const dayIndex = weekdayOf(date);
+  const rules = teacher.rules.filter((rule) => rule.weekday === dayIndex);
+  const lessons = teacher.lessons
+    .filter((lesson) => lesson.date === date)
+    .sort((a, b) => a.start_time.localeCompare(b.start_time));
+
+  function timeFromTrack(event: MouseEvent<HTMLElement>): string {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    return minToTime(OV_START + ratio * OV_TOTAL);
+  }
+
+  function createFromTrack(event: MouseEvent<HTMLElement>) {
+    if (!onCellClick) return;
+    onCellClick(teacher.id, date, timeFromTrack(event));
+  }
+
+  return (
+    <div className="teacher-overview-day-cell">
+      <button
+        type="button"
+        className="teacher-availability-track"
+        onClick={createFromTrack}
+        disabled={!onCellClick}
+        aria-label={`${teacher.name} ${date} 08:00 至 21:00 忙闲时间带，点击快速建课`}
+        title="08:00 - 21:00，点击对应时间快速建课"
+      >
+        {rules.map((rule, index) => (
+          <span
+            key={`${rule.kind}-${index}`}
+            className="absolute inset-y-0 rounded-full"
+            style={{
+              ...pct(timeToMin(rule.start_time), timeToMin(rule.end_time)),
+              backgroundColor: rule.kind === 'available' ? 'rgba(124,154,110,0.55)' : '#dfe3e5',
+            }}
+          />
+        ))}
+      </button>
+
+      <div className="mt-2 space-y-1.5">
+        {lessons.map((lesson) => (
+          <button
+            key={lesson.id}
+            type="button"
+            className="teacher-week-lesson"
+            onClick={() => onLessonClick?.(lesson)}
+            aria-label={`${lesson.start_time} ${lesson.class_name ?? lesson.course_name ?? '课程'}，点击调课或取消`}
+          >
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: courseColor(lesson.course_color, lesson.class_id) }}
+              aria-hidden="true"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block text-[10px] font-semibold text-ink-tertiary">
+                {lesson.start_time.slice(0, 5)} - {lesson.end_time.slice(0, 5)}
+              </span>
+              <span className="block truncate text-xs font-medium text-ink">
+                {lesson.class_name ?? lesson.course_name ?? '课程'}
+              </span>
+            </span>
+          </button>
+        ))}
+        {lessons.length === 0 && (
+          <button
+            type="button"
+            className="teacher-week-empty"
+            onClick={createFromTrack}
+            disabled={!onCellClick}
+          >
+            暂无排课
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** 总览网格：每行一位老师，左侧固定身份栏，右侧为 7 天课程矩阵。 */
 export function TeacherGrid({
   teachers,
   weekStart,
@@ -258,15 +348,17 @@ export function TeacherGrid({
 }) {
   const today = todayStr();
   return (
-    <div className="table-container">
-      <div className="min-w-[840px]">
-        {/* 表头：时间刻度（08:00–21:00，每 2 小时一格） */}
-        <div className="grid grid-cols-[110px_repeat(7,1fr)] border-b border-border bg-page/40">
-          <div className="px-3 py-2 text-xs text-ink-muted">老师 \ 时间</div>
+    <div className="table-container teacher-overview-table">
+      <div className="min-w-[980px]">
+        <div className="teacher-overview-grid teacher-overview-head">
+          <div className="teacher-overview-sticky px-4 py-3">
+            <p className="text-xs font-semibold text-ink-secondary">教师</p>
+            <p className="mt-0.5 text-[10px] text-ink-muted">08:00 - 21:00</p>
+          </div>
           {WEEKDAY_NAMES.map((name, i) => {
             const date = addDays(weekStart, i);
             return (
-              <div key={i} className="py-2 text-center">
+              <div key={i} className="border-l border-border/70 py-3 text-center">
                 <p className={`text-xs ${date === today ? 'font-bold text-primary' : 'text-ink-tertiary'}`}>{name}</p>
                 <p className={`text-xs ${date === today ? 'font-bold text-primary' : 'text-ink-muted'}`}>{fmtMD(date)}</p>
               </div>
@@ -277,14 +369,14 @@ export function TeacherGrid({
         {teachers.map((t) => (
           <div
             key={t.id}
-            className="grid grid-cols-[110px_repeat(7,1fr)] table-row"
+            className="teacher-overview-grid teacher-overview-row"
           >
-            <div className="flex flex-col justify-center px-3 py-2">
+            <div className="teacher-overview-sticky flex flex-col justify-center px-4 py-3">
               <p className="truncate text-sm font-medium text-ink">{t.name}</p>
               <p className="truncate text-xs text-ink-muted">{t.subject ?? ''}</p>
             </div>
             {WEEKDAY_NAMES.map((_, dayIndex) => (
-              <TeacherDayCell
+              <TeacherWeekCell
                 key={dayIndex}
                 teacher={t}
                 date={addDays(weekStart, dayIndex)}
@@ -297,17 +389,6 @@ export function TeacherGrid({
         {teachers.length === 0 && (
           <p className="px-4 py-10 text-center text-sm text-ink-muted">该校区还没有教师</p>
         )}
-        {/* 底部时间刻度 */}
-        <div className="grid grid-cols-[110px_repeat(7,1fr)] border-t border-border bg-page/30 text-[10px] text-ink-muted">
-          <div className="px-3 py-1 text-right">08:00</div>
-          <div className="py-1 text-left">10:00</div>
-          <div className="py-1 text-left">12:00</div>
-          <div className="py-1 text-left">14:00</div>
-          <div className="py-1 text-left">16:00</div>
-          <div className="py-1 text-left">18:00</div>
-          <div className="py-1 text-left">20:00</div>
-          <div className="py-1 text-right">21:00</div>
-        </div>
       </div>
     </div>
   );

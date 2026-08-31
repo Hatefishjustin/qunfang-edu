@@ -581,6 +581,116 @@ body {
   transition: transform var(--ds-motion-control) var(--ds-ease-out), box-shadow var(--ds-motion-control) var(--ds-ease-out);
 }
 
+/* 教师忙闲总览：避免与 Tailwind 内置 table-row 的 display 规则冲突。 */
+.teacher-overview-grid {
+  display: grid;
+  grid-template-columns: 8rem repeat(7, minmax(0, 1fr));
+}
+
+.teacher-overview-head {
+  border-bottom: 1px solid var(--color-border);
+  background: rgb(251 247 239 / 70%);
+}
+
+.teacher-overview-row {
+  min-height: 7.5rem;
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background-color var(--ds-motion-control) var(--ds-ease-out);
+}
+
+.teacher-overview-row:last-child {
+  border-bottom: 0;
+}
+
+.teacher-overview-row:hover {
+  background: rgb(251 247 239 / 34%);
+}
+
+.teacher-overview-sticky {
+  position: sticky;
+  z-index: 2;
+  left: 0;
+  border-right: 1px solid rgb(231 222 211 / 72%);
+  background: rgb(251 247 239 / 96%);
+  box-shadow: 8px 0 18px rgb(67 45 31 / 5%);
+}
+
+.teacher-overview-day-cell {
+  min-width: 0;
+  padding: 0.6rem;
+  border-left: 1px solid rgb(231 222 211 / 58%);
+}
+
+.teacher-availability-track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(251 247 239 / 78%);
+  box-shadow: inset 0 0 0 1px rgb(76 48 32 / 7%);
+}
+
+.teacher-availability-track:focus-visible,
+.teacher-week-lesson:focus-visible,
+.teacher-week-empty:focus-visible {
+  outline: 2px solid rgb(184 92 56 / 56%);
+  outline-offset: 2px;
+}
+
+.teacher-week-lesson {
+  display: flex;
+  width: 100%;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid rgb(231 222 211 / 76%);
+  border-radius: 0.65rem;
+  background: rgb(253 249 242 / 82%);
+  text-align: left;
+  transition: border-color var(--ds-motion-control) var(--ds-ease-out), background-color var(--ds-motion-control) var(--ds-ease-out), transform var(--ds-motion-control) var(--ds-ease-out);
+}
+
+.teacher-week-lesson:hover {
+  transform: translateY(-1px);
+  border-color: rgb(184 92 56 / 24%);
+  background: rgb(253 249 242 / 96%);
+}
+
+.teacher-week-empty {
+  display: flex;
+  width: 100%;
+  min-height: 3.35rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgb(142 142 147 / 24%);
+  border-radius: 0.65rem;
+  color: var(--color-ink-tertiary);
+  font-size: 0.7rem;
+  transition: border-color var(--ds-motion-control) var(--ds-ease-out), color var(--ds-motion-control) var(--ds-ease-out), background-color var(--ds-motion-control) var(--ds-ease-out);
+}
+
+.teacher-week-empty:hover {
+  border-color: rgb(184 92 56 / 28%);
+  color: var(--ds-accent-deep);
+  background: rgb(253 249 242 / 64%);
+}
+
+.overview-day-tabs {
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+
+.overview-day-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.overview-day-tabs > button {
+  scroll-snap-align: start;
+}
+
 .request-type:hover,
 .request-type-active:hover {
   transform: translateY(-1px);

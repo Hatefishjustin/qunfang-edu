@@ -1,5 +1,5 @@
 // 教师忙闲总览（核心页）：一屏看全老师的空闲/不可用/已排课
-// 桌面：行=老师 × 列=7 天迷你时间轴；移动端：老师下拉 + 星期切换单日视图
+// 桌面：行=老师 × 列=7 天忙闲与课程矩阵；移动端：单老师当天/一周切换
 import { useState } from 'react';
 import { useApiData } from '../../hooks/useApiData';
 import { TeacherDayCell, TeacherGrid } from '../../components/WeekGrid';
@@ -7,7 +7,7 @@ import LessonFormModal from '../../components/LessonFormModal';
 import { useSchedule } from './ScheduleLayout';
 import { WEEKDAY_NAMES } from '../../types';
 import type { Lesson, OverviewData } from '../../types';
-import { addDays, fmtMD } from '../../util/date';
+import { addDays, fmtMD, todayStr, weekdayOf } from '../../util/date';
 
 export default function TeachersOverviewPage() {
   const { campusId, weekStart } = useSchedule();
@@ -21,9 +21,10 @@ export default function TeachersOverviewPage() {
   >(null);
   const [editLesson, setEditLesson] = useState<Lesson | null>(null);
 
-  // 移动端单日视图的选择状态
+  // 移动端视图状态：默认显示今天所在的星期，可切换当天/一周。
   const [mobileTeacherId, setMobileTeacherId] = useState<number | null>(null);
-  const [mobileDay, setMobileDay] = useState(0);
+  const [mobileDay, setMobileDay] = useState(() => weekdayOf(todayStr()));
+  const [mobileView, setMobileView] = useState<'day' | 'week'>('day');
   const mobileTeacher = data?.teachers.find((t) => t.id === mobileTeacherId) ?? data?.teachers[0] ?? null;
 
   return (
@@ -69,50 +70,102 @@ export default function TeachersOverviewPage() {
         )}
       </div>
 
-      {/* 移动端：老师下拉 + 星期切换，单老师单日 */}
+      {/* 移动端：单老师视图，可在当天与一周之间切换。 */}
       <div className="md:hidden">
         {data && (
           <div className="space-y-3">
-            <select
-              value={mobileTeacher?.id ?? ''}
-              onChange={(e) => setMobileTeacherId(Number(e.target.value))}
-              className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm"
-            >
-              {data.teachers.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                  {t.subject ? `（${t.subject}）` : ''}
-                </option>
-              ))}
-            </select>
-            <div className="flex gap-1 overflow-x-auto">
-              {WEEKDAY_NAMES.map((n, i) => {
-                const date = addDays(weekStart, i);
-                return (
-                  <button
-                    key={i}
-                    onClick={() => setMobileDay(i)}
-                    className={`${mobileDay === i ? 'nav-tab-active' : 'nav-tab'}`}
-                  >
-                    {n} {fmtMD(date)}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="card overflow-hidden">
-              <div className="border-b border-border bg-page/40 px-3 py-2 text-center text-xs text-ink-muted">
-                08:00 – 21:00
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <select
+                value={mobileTeacher?.id ?? ''}
+                onChange={(e) => setMobileTeacherId(Number(e.target.value))}
+                className="select"
+                aria-label="选择教师"
+              >
+                {data.teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                    {t.subject ? `（${t.subject}）` : ''}
+                  </option>
+                ))}
+              </select>
+              <div className="glass-inset grid grid-cols-2 rounded-xl p-1" role="group" aria-label="查看范围">
+                <button
+                  type="button"
+                  onClick={() => setMobileView('day')}
+                  className={`${mobileView === 'day' ? 'nav-tab-active' : 'nav-tab'} min-h-11`}
+                  aria-pressed={mobileView === 'day'}
+                >
+                  当天
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileView('week')}
+                  className={`${mobileView === 'week' ? 'nav-tab-active' : 'nav-tab'} min-h-11`}
+                  aria-pressed={mobileView === 'week'}
+                >
+                  一周
+                </button>
               </div>
-              {mobileTeacher && (
-                <TeacherDayCell
-                  teacher={mobileTeacher}
-                  date={addDays(weekStart, mobileDay)}
-                  tall
-                  onCellClick={(teacherId, date, time) => setCreateInitial({ teacherId, date, startTime: time })}
-                  onLessonClick={(lesson) => setEditLesson(lesson)}
-                />
-              )}
             </div>
+
+            {mobileView === 'day' && (
+              <>
+                <div className="overview-day-tabs flex gap-1 overflow-x-auto pb-1">
+                  {WEEKDAY_NAMES.map((name, index) => {
+                    const date = addDays(weekStart, index);
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setMobileDay(index)}
+                        className={`${mobileDay === index ? 'nav-tab-active' : 'nav-tab'} min-h-11`}
+                      >
+                        {name} {fmtMD(date)}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="card overflow-hidden">
+                  <div className="border-b border-border bg-page/40 px-3 py-2 text-center text-xs text-ink-muted">
+                    {WEEKDAY_NAMES[mobileDay]} {fmtMD(addDays(weekStart, mobileDay))} · 08:00 - 21:00
+                  </div>
+                  {mobileTeacher && (
+                    <TeacherDayCell
+                      teacher={mobileTeacher}
+                      date={addDays(weekStart, mobileDay)}
+                      tall
+                      onCellClick={(teacherId, date, time) => setCreateInitial({ teacherId, date, startTime: time })}
+                      onLessonClick={(lesson) => setEditLesson(lesson)}
+                    />
+                  )}
+                </div>
+              </>
+            )}
+
+            {mobileView === 'week' && mobileTeacher && (
+              <div className="space-y-2">
+                {WEEKDAY_NAMES.map((name, index) => {
+                  const date = addDays(weekStart, index);
+                  return (
+                    <section key={date} className="card overflow-hidden">
+                      <div className="flex items-center justify-between border-b border-border bg-page/40 px-3 py-2">
+                        <span className="text-sm font-medium text-ink">{name}</span>
+                        <span className={`text-xs ${date === todayStr() ? 'font-semibold text-primary-dark' : 'text-ink-tertiary'}`}>
+                          {fmtMD(date)}
+                        </span>
+                      </div>
+                      <TeacherDayCell
+                        teacher={mobileTeacher}
+                        date={date}
+                        tall
+                        onCellClick={(teacherId, lessonDate, time) => setCreateInitial({ teacherId, date: lessonDate, startTime: time })}
+                        onLessonClick={(lesson) => setEditLesson(lesson)}
+                      />
+                    </section>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>
