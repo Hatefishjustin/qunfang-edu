@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* 群芳教育 · 温暖现代艺术培训风色板（暖橙版） */
+/* 温暖现代艺术培训风色板（暖橙版）· 品牌名配置见 web/src/config/brand.ts */
 @theme {
   /* 品牌主色：温暖橙调，传递艺术感、亲和力与活力 */
   --color-primary: #f4a261;

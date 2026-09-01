@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ChangePasswordButton } from '../../components/ChangePasswordModal';
 import NotificationButton from '../../components/NotificationButton';
+import { brandMark, brandTitle } from '../../config/brand';
 
 const TABS = [
   { to: '/teacher', label: '我的课表', end: true },
@@ -18,9 +19,9 @@ export default function TeacherLayout() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2.5">
             <div className="brand-mark flex h-9 w-9 items-center justify-center rounded-xl">
-              群
+              {brandMark}
             </div>
-            <p className="font-bold text-ink">群芳教育 · 教师端</p>
+            <p className="font-bold text-ink">{brandTitle('教师端')}</p>
           </div>
           {user && (
             <div className="flex items-center gap-2">

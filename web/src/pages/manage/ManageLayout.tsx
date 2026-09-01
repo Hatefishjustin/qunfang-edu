@@ -7,6 +7,7 @@ import { useApiData } from '../../hooks/useApiData';
 import { ChangePasswordButton } from '../../components/ChangePasswordModal';
 import NotificationButton from '../../components/NotificationButton';
 import type { Campus } from '../../types';
+import { brandMark, brandTitle } from '../../config/brand';
 
 const TABS = [
   { to: '/manage/teachers', label: '教师' },
@@ -46,9 +47,9 @@ export default function ManageLayout() {
         <div className="app-design-header-row app-design-header-row-dense mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="app-design-brand flex items-center gap-2.5">
             <div className="brand-mark flex h-9 w-9 items-center justify-center rounded-xl">
-              群
+              {brandMark}
             </div>
-            <p className="font-bold text-ink">群芳教育 · 校区管理</p>
+            <p className="font-bold text-ink">{brandTitle('校区管理')}</p>
           </div>
           <div className="app-design-actions flex items-center gap-2">
             {isSuperAdmin && (

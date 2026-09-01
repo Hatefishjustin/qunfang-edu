@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { brandTitle } from '../../config/brand';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -35,7 +36,7 @@ export default function LoginPage() {
       <div className="flex flex-1 flex-col justify-center">
         <div className="mx-auto mb-8 w-full max-w-sm">
           <span className="glass-label mb-4 inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary-dark">
-            群芳教育 · 管理系统
+            {brandTitle('管理系统')}
           </span>
           <h1 className="font-serif text-4xl font-normal leading-tight tracking-tight text-ink">
             记录每一次成长
