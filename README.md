@@ -2,6 +2,8 @@
 
 培训机构排课 / 考勤 / 课时卡管理系统。技术栈：Cloudflare Workers + Hono + D1 + KV，前端 Vite + React 18 + TypeScript + Tailwind v4。双云部署：同一套代码同时跑在 Cloudflare Workers（海外）与腾讯 CloudBase（国内直连）。
 
+> **第一次拿到源码？** 先读 `docs/部署安装手册.md`——从本地跑起来到上线双云的完整步骤（面向非技术用户）。换品牌只需改 `web/src/config/brand.ts` 一个文件。
+
 ## 线上地址（双云）
 
 | 入口 | 地址 | 适用 |
