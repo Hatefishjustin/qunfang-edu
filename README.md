@@ -1,6 +1,8 @@
-# 群芳教育管理系统（网页端 MVP）
+# 培训机构教务系统（网页端 MVP）
 
 培训机构排课 / 考勤 / 课时卡管理系统。技术栈：Cloudflare Workers + Hono + D1 + KV，前端 Vite + React 18 + TypeScript + Tailwind v4。双云部署：同一套代码同时跑在 Cloudflare Workers（海外）与腾讯 CloudBase（国内直连）。
+
+> **商业交付**：购买、授权范围、交付清单和售后边界见 `docs/买家交付与售后说明.md`。准备发货时运行 `node scripts/create-release.mjs <版本号>`；脚本会阻止未定稿授权协议或非干净提交进入交付包。
 
 > **第一次拿到源码？** 先读 `docs/部署安装手册.md`——从本地跑起来到上线双云的完整步骤（面向非技术用户）。换品牌只需改 `web/src/config/brand.ts` 一个文件。
 

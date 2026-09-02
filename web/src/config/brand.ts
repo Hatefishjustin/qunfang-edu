@@ -6,7 +6,7 @@
  */
 
 /** 品牌/机构名称，显示在登录页与各端顶部导航 */
-export const brandName = '群芳教育';
+export const brandName = '培训机构教务系统';
 
 /** 品牌徽标字（显示在顶部圆角徽标中），默认取品牌名首字 */
 export const brandMark = brandName.slice(0, 1);
@@ -14,7 +14,7 @@ export const brandMark = brandName.slice(0, 1);
 /** 品牌标语，显示在登录页品牌名下方（可选，留空则不显示） */
 export const brandSlogan = '';
 
-/** 拼接 "品牌 · 模块名"（如 "群芳教育 · 教师端"）；无模块名时仅返回品牌名 */
+/** 拼接 "品牌 · 模块名"（如 "培训机构教务系统 · 教师端"）；无模块名时仅返回品牌名 */
 export function brandTitle(module?: string): string {
   return module ? `${brandName} · ${module}` : brandName;
 }
